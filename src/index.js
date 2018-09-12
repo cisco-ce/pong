@@ -80,10 +80,13 @@ function setupColors() {
 }
 
 function init() {
-  reset(state);
+  state.field.width = window.innerWidth;
+  state.field.height = window.innerHeight;
   const field = $('.field');
   field.style.width = state.field.width + 'px';
   field.style.height = state.field.height + 'px';
+
+  reset(state);
   field.onmousedown = (e) => click(e.offsetX, e.offsetY);
 
   const targetRect = field.getBoundingClientRect();

@@ -4,8 +4,6 @@
  * - x,y is zero at top left and positive right and downwards
  */
 
-const width = 800;
-const height = 500;
 const BarW = 20, BarH = 100;
 
 function absMax(value, max) {
@@ -27,8 +25,8 @@ function randSign() { return Math.random() < 0.5 ? 1 : -1 }
 const state = {
   currentColor: 'red',
   field: {
-    width,
-    height,
+    width: 0,
+    height: 0,
   },
   isPlaying: false,
   ball: {
