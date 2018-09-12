@@ -1,0 +1,118 @@
+/**
+ * Frame of reference:
+ * - all positions are given as x,y,w,h, where x and y is top left pos (not center of object)
+ * - x,y is zero at top left and positive right and downwards
+ */
+
+const width = 800;
+const height = 500;
+const BarW = 20, BarH = 100;
+
+function absMax(value, max) {
+  if (value > max) return max;
+  if (value < -max) return -max;
+  return value;
+}
+
+function randElement(list) {
+  return list[parseInt(Math.random() * list.length)];
+}
+
+function random(min, max) {
+  return min + (max-min) * Math.random();
+}
+
+function randSign() { return Math.random() < 0.5 ? 1 : -1 }
+
+const state = {
+  currentColor: 'red',
+  field: {
+    width,
+    height,
+  },
+  isPlaying: false,
+  ball: {
+    x: 0,
+    y: 0,
+    h: config.ballSize.h,
+    w: config.ballSize.w,
+    vx: 0,
+    vy: 0,
+    color: '',
+  },
+  scores: {
+    score1: 0,
+    score2: 0,
+  },
+  bars: {
+    bar1: false, // { x, y, color },
+    bar2: false,
+  },
+};
+
+function reset(state) {
+  const { field, ball } = state;
+  const { initYSpeed, startSpeed, colors } = config;
+  ball.x = field.width / 2 - ball.w / 2;
+  ball.y = field.height / 2 - ball.h / 2;
+  ball.vx = startSpeed * randSign();
+  ball.vy = random(initYSpeed.min, initYSpeed.max) * randSign();
+  state.isPlaying = false;
+  ball.color = randElement(colors);
+  state.bars.bar1 = false;
+  state.bars.bar2 = false;
+}
+
+function selectColor(state, color) {
+  state.currentColor = color;
+}
+
+function setBar(state, player1, values) {
+  // cant set it more than once
+  if (player1 && state.bars.bar1) return;
+  if (!player1 && state.bars.bar2) return;
+  if (!state.isPlaying) return;
+
+  if (player1) state.bars.bar1 = values;
+  else state.bars.bar2 = values;
+}
+
+function nextStep(state) {
+  const { ball, bars, field } = state;
+
+  let x = ball.x + ball.vx;
+  let y = ball.y + ball.vy;
+  const ballR = { x: x, y: y, w: ball.w, h: ball.h };
+  const bar1 = { x: bars.bar1.x, y: bars.bar1.y, w: BarW, h: BarH };
+  const bar2 = { x: bars.bar2.x, y: bars.bar2.y, w: BarW, h: BarH };
+
+  const hitPlayer1 = bars.bar1 && bars.bar1.color === ball.color && collides(ballR, bar1);
+  const hitPlayer2 = bars.bar2 && bars.bar2.color === ball.color && collides(ballR, bar2);
+  if (hitPlayer1 || hitPlayer2) {
+    const newSpeed = -ball.vx - (Math.sign(ball.vx) * config.speedIncreasePerHit);
+    ball.vx = absMax(newSpeed, config.maxSpeed);
+    ball.color = randElement(config.colors);
+    x = ball.x;
+    y = ball.y;
+    if (hitPlayer1) bars.bar1 = false;
+    if (hitPlayer2) bars.bar2 = false;
+  }
+  if (y < 0 || y + ball.h > field.height) {
+    ball.vy = -ball.vy;
+    y = ball.y;
+    x = ball.x;
+  }
+
+  ball.x = x;
+  ball.y = y;
+
+  if (x < 0) {
+    state.scores.score2 += 1;
+    reset(state);
+  }
+  else if (x > field.width) {
+    state.scores.score1 += 1;
+    reset(state);
+  }
+
+}
