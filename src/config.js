@@ -1,6 +1,5 @@
 const config = {
   colors: ['black', 'yellow', 'red', 'purple', 'blue', 'green'],
-  frameRate: 1000/60,
   speedIncreasePerHit: 0.3,
   ballSize: {
    w: 30,

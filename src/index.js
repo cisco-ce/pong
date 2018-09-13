@@ -13,7 +13,10 @@ function update() {
   updateBall(state.ball);
   updateBars(state);
   updateScores(state);
-  if (state.isPlaying) nextStep(state);
+  if (state.isPlaying) {
+    nextStep(state);
+    window.requestAnimationFrame(update);
+  }
 }
 
 function updateScores(state) {
@@ -52,6 +55,7 @@ function debug(msg) {
 function click(x, y) {
   if (!state.isPlaying) {
     togglePlay();
+    update();
     return;
   }
   const isPlayer1  = x < state.field.width / 2;
@@ -105,7 +109,7 @@ function init() {
   update();
   window.onkeydown = keypress;
   setupColors();
-  setInterval(update, config.frameRate);
+  update();
 }
 
 window.onload = init;
