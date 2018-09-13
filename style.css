@@ -65,6 +65,12 @@ body {
   border: 7px solid white;
 }
 
+.debug {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
 .scores {
   position: absolute;
   top: 20px;

@@ -71,6 +71,7 @@ function setBar(state, player1, values) {
   if (!player1 && state.bars.bar2) return;
   if (!state.isPlaying) return;
 
+  if (!state.bars) state.bars = {};
   if (player1) state.bars.bar1 = values;
   else state.bars.bar2 = values;
 }
@@ -83,7 +84,6 @@ function nextStep(state) {
   const ballR = { x: x, y: y, w: ball.w, h: ball.h };
   const bar1 = { x: bars.bar1.x, y: bars.bar1.y, w: BarW, h: BarH };
   const bar2 = { x: bars.bar2.x, y: bars.bar2.y, w: BarW, h: BarH };
-
   const hitPlayer1 = bars.bar1 && bars.bar1.color === ball.color && collides(ballR, bar1);
   const hitPlayer2 = bars.bar2 && bars.bar2.color === ball.color && collides(ballR, bar2);
   if (hitPlayer1 || hitPlayer2) {

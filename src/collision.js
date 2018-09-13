@@ -8,7 +8,7 @@ function _collides(r1, r2) {
 function collides(r1, r2) {
   return _collides(
     { x1: r1.x, x2: r1.x + r1.w, y1: r1.y, y2: r1.y + r1.h },
-    { x1: r2.x, x2: r2.x + r2.w, y1: r2.y, y2: r2.y + r2.h },
+    { x1: r2.x, x2: r2.x + r2.w, y1: r2.y, y2: r2.y + r2.h }
   );
 }
 

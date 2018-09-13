@@ -6,7 +6,7 @@ const config = {
    w: 30,
    h: 30,
  },
- startSpeed: 1.5,
- maxSpeed: 7,
- initYSpeed: { min: 1, max: 2 },
+ startSpeed: 3,
+ maxSpeed: 15,
+ initYSpeed: { min: 1.5, max: 3 },
 };

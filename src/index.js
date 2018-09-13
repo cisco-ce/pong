@@ -45,6 +45,10 @@ function updateBall(b) {
   setPos(ball, x, y);
 }
 
+function debug(msg) {
+  $('.debug').innerText = JSON.stringify(msg);
+}
+
 function click(x, y) {
   if (!state.isPlaying) {
     togglePlay();
@@ -89,10 +93,9 @@ function init() {
   reset(state);
   field.onmousedown = (e) => click(e.offsetX, e.offsetY);
 
-  const targetRect = field.getBoundingClientRect();
   field.ontouchstart = (e) => {
     e.preventDefault();
-    click(e.touches[0].clientX - targetRect.x, e.touches[0].clientY - targetRect.y);
+    click(e.touches[0].clientX, e.touches[0].clientY);
   };
   field.onclick = e => e.stopPropagation();
   const ball = $('.ball');
