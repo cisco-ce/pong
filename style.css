@@ -98,6 +98,11 @@ html, body {
   font-size: 30px;
 }
 
+.scores {
+  font-size: 250px;
+  opacity: 0.3;
+}
+
 .score1, .score2 {
   position: absolute;
   top: 0;
@@ -107,8 +112,6 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 100px;
-  opacity: 0.3;
   pointer-events: none;
 }
 

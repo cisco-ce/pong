@@ -17,13 +17,11 @@ function update() {
   updateScores(state);
   if (isPlaying) {
     nextStep(state);
-    $('.score1').style.display = 'none';
-    $('.score2').style.display = 'none';
+    $('.scores').style.display = 'none';
     window.requestAnimationFrame(update);
   }
   else {
-    $('.score1').style.display = 'flex';
-    $('.score2').style.display = 'flex';
+    $('.scores').style.display = 'block';
   }
   if (gameOver) {
     const { scores } = state;
