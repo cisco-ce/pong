@@ -1,6 +1,8 @@
 
 function $(sel) { return document.querySelector(sel) }
 
+let keepAliveTimer = 0;
+
 function togglePlay() {
   state.isPlaying = !state.isPlaying;
   update();
@@ -70,15 +72,28 @@ function keypress(e) {
   if (e.key === ' ') togglePlay();
 }
 
+function keepAlive() {
+  console.log('keep alive');
+  clearTimeout(keepAliveTimer);
+  keepAliveTimer = setTimeout(startDemo, config.standbyTime * 1000);
+}
+
 function setupColors() {
   const picker = createColorPicker(state, (c) => selectColor(state, c));
   $('.footer').appendChild(picker);
 }
 
 function message(text) {
-  const msg = $('.message');
+  const msg = $('.pill');
   msg.innerText = text;
-  $('.center').style.display = !!text ? 'flex' : 'none';
+  $('.message').style.display = !!text ? 'flex' : 'none';
+}
+
+function startDemo() {
+  console.log('start demo');
+  $('.intro').style.display = 'flex';
+  setDemo(state, true);
+  update();
 }
 
 function init() {
@@ -113,16 +128,28 @@ function init() {
   ball.style.width = state.ball.w + 'px';
   ball.style.height = state.ball.h + 'px';
 
-  $('.center').ontouchstart = (e) => {
-    $('.center').style.display = 'none';
+  $('.message').ontouchstart = (e) => {
+    $('.message').style.display = 'none';
     newGame(state);
     update();
     e.stopPropagation();
   }
+
+  $('.intro').ontouchstart = (e) => {
+    $('.intro').style.display = 'none';
+    newGame(state);
+    setDemo(state, false);
+    keepAlive();
+    update();
+    e.stopPropagation();
+  }
+
+  window.addEventListener('touchstart', keepAlive, true);
   window.onkeydown = keypress;
   window.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
   setupColors();
   update();
+  startDemo();
 }
 
 window.onload = init;

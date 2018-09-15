@@ -89,7 +89,7 @@ html, body {
   left: 20px;
 }
 
-.center {
+.overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -101,7 +101,7 @@ html, body {
   display: none;
 }
 
-.message {
+.pill {
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   padding: 20px 40px;
@@ -128,4 +128,22 @@ html, body {
 
 .score2 {
   left: 50%;
+}
+
+.dialog {
+  font-family: CiscoSansTT Thin;
+  height: 600px;
+  width: 600px;
+  padding-top: 400px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 60px;
+  background-image: url('assets/logo.svg');
+  background-size: 200px 200px;
+  background-repeat: no-repeat;
+  background-position: center 100px;
 }

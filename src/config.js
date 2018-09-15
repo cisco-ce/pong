@@ -7,7 +7,11 @@ const config = {
  startSpeed: 7,
  maxSpeed: 20,
  speedIncreasePerHit: 0.8,
- initYSpeed: { min: 1.5, max: 3 },
- maxBarHeight: 150,
+ initYSpeed: {
+   min: 1.5,
+   max: 3,
+ },
+ maxBarHeight: 250,
  winScore: 5,
+ standbyTime: 30,
 };

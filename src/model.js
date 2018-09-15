@@ -30,6 +30,7 @@ const state = {
   },
   isPlaying: false,
   gameOver: false,
+  demo: true,
   ball: {
     x: 0,
     y: 0,
@@ -71,6 +72,12 @@ function startBar(state, x, y, color) {
   const bar = { x, y, height: 0, color };
   if (player1) state.bars.bar1 = bar;
   else state.bars.bar2 = bar;
+}
+
+function setDemo(state, isDemo) {
+  state.demo = isDemo;
+  state.isPlaying = isDemo;
+  if (isDemo) state.ball.vx = (config.maxSpeed + config.startSpeed) / 2;
 }
 
 function drawBar(state, x, y) {
@@ -136,11 +143,15 @@ function nextStep(state) {
   ball.x = x;
   ball.y = y;
 
-  if (x < 0) {
+  if ((x < 0 || x + ball.w + 30> field.width) && state.demo) {
+    ball.vx = -ball.vx;
+    ball.color = randElement(config.colors);
+  }
+  else if (x < 0) {
     state.scores.score2 += 1;
     onGoal(state);
   }
-  else if (x > field.width) {
+  else if (x + ball.w > field.width) {
     state.scores.score1 += 1;
     onGoal(state);
   }
