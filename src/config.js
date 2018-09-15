@@ -5,7 +5,8 @@ const config = {
    w: 30,
    h: 30,
  },
- startSpeed: 6,
+ startSpeed: 4,
  maxSpeed: 20,
  initYSpeed: { min: 1.5, max: 3 },
+ maxBarHeight: 150,
 };

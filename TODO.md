@@ -1,7 +1,7 @@
-- fix problem with clicking on lower part
 - drag and drop to draw bar, limit height
 - stop game when we have a winner (first to five?)
-- cisco style, font, color bar
+- cisco style color bar
+- style ball, optional drag tail
 - resize canvas on window change
 - reset game button
 

@@ -3,6 +3,7 @@ function $(sel) { return document.querySelector(sel) }
 
 function togglePlay() {
   state.isPlaying = !state.isPlaying;
+  update();
 }
 
 function setPos(el, x, y) {
@@ -29,7 +30,7 @@ function updateBar(element, bar) {
   if (bar) {
     setPos(element, bar.x, bar.y);
     element.style.backgroundColor = bar.color;
-    element.style.height = BarH + 'px';
+    element.style.height = bar.height + 'px';
   }
 }
 
@@ -50,17 +51,6 @@ function updateBall(b) {
 
 function debug(msg) {
   $('.debug').innerText = JSON.stringify(msg);
-}
-
-function touch(x, y) {
-  if (!state.isPlaying) {
-    togglePlay();
-    update();
-    return;
-  }
-  const isPlayer1  = x < state.field.width / 2;
-  const yOffset = y - BarH / 2;
-  setBar(state, isPlayer1, { x, y: yOffset, color: state.currentColor });
 }
 
 function keypress(e) {
@@ -97,16 +87,31 @@ function init() {
 
   reset(state);
 
-  field.ontouchstart = (e) => {
-    e.preventDefault();
-    touch(e.touches[0].clientX, e.touches[0].clientY);
-  };
+  ontouchstart = (e) => {
+    if (!state.isPlaying) togglePlay();
+    else {
+      const touch = event.touches[0];
+      startBar(state, touch.clientX, touch.clientY, state.currentColor);
+      updateBars(state);
+    }
+  }
+  ontouchmove = (e) => {
+    const touch = event.touches[0];
+    drawBar(state, touch.clientX, touch.clientY);
+    updateBars(state);
+  }
+
+  // field.ontouchstart = (e) => {
+  //   e.preventDefault();
+  //   touch(e.touches[0].clientX, e.touches[0].clientY);
+  // };
 
   const ball = $('.ball');
   ball.style.width = state.ball.w + 'px';
   ball.style.height = state.ball.h + 'px';
 
   window.onkeydown = keypress;
+  window.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
   setupColors();
   update();
 }

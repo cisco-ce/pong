@@ -4,7 +4,7 @@
  * - x,y is zero at top left and positive right and downwards
  */
 
-const BarW = 20, BarH = 100;
+const BarW = 20;
 
 function absMax(value, max) {
   if (value > max) return max;
@@ -65,16 +65,35 @@ function selectColor(state, color) {
   state.currentColor = color;
 }
 
-function setBar(state, player1, values) {
-  // cant set it more than once
-  if (player1 && state.bars.bar1) return;
-  if (!player1 && state.bars.bar2) return;
-  if (!state.isPlaying) return;
-
-  if (!state.bars) state.bars = {};
-  if (player1) state.bars.bar1 = values;
-  else state.bars.bar2 = values;
+function startBar(state, x, y, color) {
+  const player1 = x < state.field.width / 2;
+  const bar = { x, y, height: 0, color };
+  if (player1) state.bars.bar1 = bar;
+  else state.bars.bar2 = bar;
 }
+
+function drawBar(state, x, y) {
+  const MaxHeight = config.maxBarHeight;
+  const player1 = x < state.field.width / 2;
+  const bar = player1 ? state.bars.bar1 : state.bars.bar2;
+  if (bar.height >= MaxHeight) return;
+  const yMin = Math.min(y, bar.y);
+  const yMax = Math.max(y, bar.y + bar.height);
+  bar.y = yMin;
+  bar.height = yMax - yMin;
+}
+
+// For direct set bar
+// function setBar(state, player1, values) {
+//   // cant set it more than once
+//   if (player1 && state.bars.bar1) return;
+//   if (!player1 && state.bars.bar2) return;
+//   if (!state.isPlaying) return;
+//
+//   if (!state.bars) state.bars = {};
+//   if (player1) state.bars.bar1 = values;
+//   else state.bars.bar2 = values;
+// }
 
 function nextStep(state) {
   const { ball, bars, field } = state;
@@ -82,8 +101,8 @@ function nextStep(state) {
   let x = ball.x + ball.vx;
   let y = ball.y + ball.vy;
   const ballR = { x: x, y: y, w: ball.w, h: ball.h };
-  const bar1 = { x: bars.bar1.x, y: bars.bar1.y, w: BarW, h: BarH };
-  const bar2 = { x: bars.bar2.x, y: bars.bar2.y, w: BarW, h: BarH };
+  const bar1 = { x: bars.bar1.x, y: bars.bar1.y, w: BarW, h: bars.bar1.height };
+  const bar2 = { x: bars.bar2.x, y: bars.bar2.y, w: BarW, h: bars.bar2.height };
   const hitPlayer1 = bars.bar1 && bars.bar1.color === ball.color && collides(ballR, bar1);
   const hitPlayer2 = bars.bar2 && bars.bar2.color === ball.color && collides(ballR, bar2);
   if (hitPlayer1 || hitPlayer2) {
