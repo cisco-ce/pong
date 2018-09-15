@@ -11,12 +11,18 @@ function setPos(el, x, y) {
 }
 
 function update() {
-  updateBall(state.ball);
+  const { ball, scores, isPlaying, gameOver } = state;
+  updateBall(ball);
   updateBars(state);
   updateScores(state);
-  if (state.isPlaying) {
+  if (isPlaying) {
     nextStep(state);
     window.requestAnimationFrame(update);
+  }
+  if (gameOver) {
+    const { scores } = state;
+    const winner = scores.score1 > scores.score2 ? 'Player 1' : 'Player 2';
+    message(`${winner} won!`);
   }
 }
 
@@ -78,6 +84,12 @@ function setupColors() {
   bar.ontouchstart = (e) => e.stopPropagation(); // not a click on canvas
 }
 
+function message(text) {
+  const msg = $('.message');
+  msg.innerText = text;
+  $('.center').style.display = !!text ? 'flex' : 'none';
+}
+
 function init() {
   state.field.width = window.innerWidth;
   state.field.height = window.innerHeight;
@@ -110,6 +122,12 @@ function init() {
   ball.style.width = state.ball.w + 'px';
   ball.style.height = state.ball.h + 'px';
 
+  $('.center').ontouchstart = (e) => {
+    $('.center').style.display = 'none';
+    newGame(state);
+    update();
+    e.stopPropagation();
+  }
   window.onkeydown = keypress;
   window.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
   setupColors();

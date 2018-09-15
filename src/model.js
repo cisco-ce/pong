@@ -29,6 +29,7 @@ const state = {
     height: 0,
   },
   isPlaying: false,
+  gameOver: false,
   ball: {
     x: 0,
     y: 0,
@@ -95,6 +96,18 @@ function drawBar(state, x, y) {
 //   else state.bars.bar2 = values;
 // }
 
+function onGoal(state) {
+  reset(state);
+  const win = config.winScore;
+  state.gameOver = state.scores.score1 === win || state.scores.score2 === win;
+}
+
+function newGame(state) {
+  reset(state);
+  state.gameOver = false;
+  state.scores = { score1: 0, score2: 0 };
+}
+
 function nextStep(state) {
   const { ball, bars, field } = state;
 
@@ -125,11 +138,11 @@ function nextStep(state) {
 
   if (x < 0) {
     state.scores.score2 += 1;
-    reset(state);
+    onGoal(state);
   }
   else if (x > field.width) {
     state.scores.score1 += 1;
-    reset(state);
+    onGoal(state);
   }
 
 }

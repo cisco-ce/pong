@@ -9,4 +9,5 @@ const config = {
  maxSpeed: 20,
  initYSpeed: { min: 1.5, max: 3 },
  maxBarHeight: 150,
+ winScore: 5,
 };
