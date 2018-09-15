@@ -26,13 +26,13 @@ html, body {
 
 .player {
   position: absolute;
-  width: 10px;
-  border-radius: 5px;
+  width: 5px;
+  border-radius: 10px;
 }
 
 .footer {
   position: absolute;
-  bottom: 20px;
+  bottom: 60px;
   left: 0;
   width: 100%;
   display: flex;
@@ -46,7 +46,7 @@ html, body {
   display: inline-flex;
   align-items: center;
   padding: 5px;
-  background: #333;
+  background: rgba(0, 0, 0, 0.8); /* allow ball to be seen behind */
   border-radius: 40px;
 }
 
@@ -56,9 +56,11 @@ html, body {
   width: 50px;
   border-radius: 50%;
   margin: 0 10px;
+  border: 12px solid #333;
 }
+
 .color.selected {
-  border: 7px solid white;
+  border: 12px solid white;
 }
 
 .debug {
@@ -97,6 +99,7 @@ html, body {
   font-size: 30px;
   pointer-events: none;
 }
+
 .score1, .score2 {
   margin: 0 10px;
 }

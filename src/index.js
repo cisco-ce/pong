@@ -64,24 +64,8 @@ function keypress(e) {
 }
 
 function setupColors() {
-  const bar = $('.colors');
-  config.colors.forEach(c => {
-    const color = document.createElement('div');
-    color.classList.add('color');
-    color.style.backgroundColor = c;
-    const select = () => {
-      selectColor(state, c);
-      const prev = $('.color.selected');
-      if (prev) prev.classList.remove('selected');
-      color.classList.add('selected');
-    }
-
-    color.ontouchstart = (e) => { select(); e.preventDefault(); }
-
-    if (c === state.currentColor) color.classList.add('selected');
-    bar.appendChild(color);
-  });
-  bar.ontouchstart = (e) => e.stopPropagation(); // not a click on canvas
+  const picker = createColorPicker(state, (c) => selectColor(state, c));
+  $('.footer').appendChild(picker);
 }
 
 function message(text) {
