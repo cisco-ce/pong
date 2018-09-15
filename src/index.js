@@ -53,9 +53,12 @@ function updateBars(state) {
 }
 
 function updateBall(b) {
-  const { x, y, color } = b;
+  const { x, y, vx, vy, color } = b;
   const ball = $('.ball');
+  const shadow = $('.ball-shadow');
   ball.style.backgroundColor = color;
+  shadow.style.left = (-1.5 * vx) + 'px';
+  shadow.style.top = (-1.5 * vy) + 'px';
   setPos(ball, x, y);
 }
 

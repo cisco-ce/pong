@@ -24,6 +24,17 @@ html, body {
   will-change: transform; /* for gpu acceleration, maybe not needed */
 }
 
+.ball-shadow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px; /* offset programmatically for tail */
+  left: 0px;
+  border-radius: 50%;
+  background-color: inherit;
+  opacity: 0.1;
+}
+
 .player {
   position: absolute;
   width: 5px;
@@ -56,7 +67,7 @@ html, body {
   align-items: center;
   padding: 5px;
   background: rgba(0, 0, 0, 0.8); /* allow ball to be seen behind */
-  border-radius: 40px;
+  border-radius: 60px;
 }
 
 .color {
