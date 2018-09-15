@@ -23,7 +23,7 @@ function random(min, max) {
 function randSign() { return Math.random() < 0.5 ? 1 : -1 }
 
 const state = {
-  currentColor: 'red',
+  currentColor: config.colors[0],
   field: {
     width: 0,
     height: 0,

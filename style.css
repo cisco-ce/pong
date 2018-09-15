@@ -41,6 +41,15 @@ html, body {
   align-items: center;
 }
 
+.divider {
+  position: absolute;
+  left: calc(50% - 3px);
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background: #eee;
+}
+
 .colors {
   margin: 5px 0;
   display: inline-flex;
@@ -89,17 +98,20 @@ html, body {
   font-size: 30px;
 }
 
-.scores {
+.score1, .score2 {
   position: absolute;
-  top: 20px;
+  top: 0;
   left: 0;
-  width: 100%;
+  width: 50%;
+  height: 100%;
   display: flex;
   justify-content: center;
-  font-size: 30px;
+  align-items: center;
+  font-size: 100px;
+  opacity: 0.3;
   pointer-events: none;
 }
 
-.score1, .score2 {
-  margin: 0 10px;
+.score2 {
+  left: 50%;
 }
