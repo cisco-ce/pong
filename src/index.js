@@ -52,7 +52,7 @@ function debug(msg) {
   $('.debug').innerText = JSON.stringify(msg);
 }
 
-function click(x, y) {
+function touch(x, y) {
   if (!state.isPlaying) {
     togglePlay();
     update();
@@ -79,12 +79,13 @@ function setupColors() {
       if (prev) prev.classList.remove('selected');
       color.classList.add('selected');
     }
-    color.onmousedown = select;
+
     color.ontouchstart = (e) => { select(); e.preventDefault(); }
 
     if (c === state.currentColor) color.classList.add('selected');
     bar.appendChild(color);
   });
+  bar.ontouchstart = (e) => e.stopPropagation(); // not a click on canvas
 }
 
 function init() {
@@ -95,18 +96,16 @@ function init() {
   field.style.height = state.field.height + 'px';
 
   reset(state);
-  field.onmousedown = (e) => click(e.offsetX, e.offsetY);
 
   field.ontouchstart = (e) => {
     e.preventDefault();
-    click(e.touches[0].clientX, e.touches[0].clientY);
+    touch(e.touches[0].clientX, e.touches[0].clientY);
   };
-  field.onclick = e => e.stopPropagation();
+
   const ball = $('.ball');
   ball.style.width = state.ball.w + 'px';
   ball.style.height = state.ball.h + 'px';
 
-  update();
   window.onkeydown = keypress;
   setupColors();
   update();
