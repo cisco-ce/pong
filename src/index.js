@@ -95,6 +95,7 @@ function message(text) {
 
 function startDemo() {
   $('.intro').style.display = 'flex';
+  $('.o-marker').style.backgroundColor = randElement(config.colors);
   setDemo(state, true);
   update();
 }
