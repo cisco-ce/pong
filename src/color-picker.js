@@ -3,11 +3,13 @@ function createColorPicker(onSelect, selected) {
   const bar = document.createElement('div');
   bar.className = 'colors';
   config.colors.forEach(c => {
+    const box = document.createElement('div');
+    box.classList.add('color-box');
     const color = document.createElement('div');
     color.classList.add('color');
     color.style.backgroundColor = c;
-
-    color.ontouchstart = (e) => {
+    box.appendChild(color);
+    box.ontouchstart = (e) => {
       e.preventDefault();
       onSelect(c);
       const prev = bar.querySelector('.color.selected');
@@ -16,7 +18,7 @@ function createColorPicker(onSelect, selected) {
     }
 
     if (c === selected) color.classList.add('selected');
-    bar.appendChild(color);
+    bar.appendChild(box);
   });
   bar.ontouchstart = (e) => e.stopPropagation(); // not a click to draw on canvas etc
 
