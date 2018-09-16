@@ -1,0 +1,38 @@
+/* overrides cisco pong to look like the classic b/w original */
+
+.field {
+  background: black;
+}
+
+.ball {
+  border-radius: 0;
+}
+
+.player {
+  width: 10px;
+}
+
+.footer {
+  display: none;
+}
+
+.divider {
+  background: none;
+  border-right: 3px dashed white;
+}
+
+.scores {
+  opacity: 1;
+  color: white;
+  font-family: helvetica;
+}
+.score1, .score2 {
+  align-items: flex-start;
+}
+
+.dialog {
+  background: transparent;
+  color: white;
+  border: 0;
+  box-shadow: none;
+}

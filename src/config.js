@@ -16,3 +16,11 @@ const config = {
  standbyTime: 30,
  twoColorPickers: true,
 };
+
+const classicConfig = {
+  colors: ['white'],
+  ballSize: {
+   w: 20,
+   h: 20,
+ },
+}
