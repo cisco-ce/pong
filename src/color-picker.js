@@ -1,5 +1,5 @@
 
-function createColorPicker(state, onSelect) {
+function createColorPicker(onSelect, selected) {
   const bar = document.createElement('div');
   bar.className = 'colors';
   config.colors.forEach(c => {
@@ -15,7 +15,7 @@ function createColorPicker(state, onSelect) {
       color.classList.add('selected');
     }
 
-    if (c === state.currentColor) color.classList.add('selected');
+    if (c === selected) color.classList.add('selected');
     bar.appendChild(color);
   });
   bar.ontouchstart = (e) => e.stopPropagation(); // not a click to draw on canvas etc

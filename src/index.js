@@ -78,11 +78,12 @@ function keepAlive() {
 }
 
 function setupColors() {
-  const picker1 = createColorPicker(state, (c) => selectColor(state, c, null));
+  const { color1, color2 } = state.colors;
+  const picker1 = createColorPicker((c) => selectColor(state, c, null), color1);
   $('.footer').appendChild(picker1);
 
   if (!config.twoColorPickers) return;
-  const picker2 = createColorPicker(state, (c) => selectColor(state, null, c));
+  const picker2 = createColorPicker((c) => selectColor(state, null, c), color2);
   $('.footer').appendChild(picker2);
 }
 

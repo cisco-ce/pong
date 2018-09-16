@@ -41,7 +41,7 @@ const state = {
   },
   colors: {
     color1: config.colors[0],
-    color2: config.colors[1],
+    color2: config.colors[0],
   },
   scores: {
     score1: 0,
