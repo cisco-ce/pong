@@ -37,8 +37,9 @@ html, body {
 
 .player {
   position: absolute;
-  width: 5px;
-  border-radius: 10px;
+  width: 30px;
+  background-size: 100% 450px;
+  background-repeat: no-repeat;
 }
 
 .footer {

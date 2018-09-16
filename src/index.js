@@ -40,9 +40,11 @@ function updateScores(state) {
 function updateBar(element, bar) {
   element.style.display = bar ? 'block' : 'none';
   if (bar) {
-    setPos(element, bar.x, bar.y);
-    element.style.backgroundColor = bar.color;
-    element.style.height = bar.height + 'px';
+    const { x, y, color, height } = bar;
+    setPos(element, x, y);
+    const cname = color.replace('#', '');
+    element.style.backgroundImage = `url('assets/line-${cname}.png')`;
+    element.style.height = height + 'px';
   }
 }
 
