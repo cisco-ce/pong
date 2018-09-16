@@ -23,7 +23,6 @@ function random(min, max) {
 function randSign() { return Math.random() < 0.5 ? 1 : -1 }
 
 const state = {
-  currentColor: config.colors[0],
   field: {
     width: 0,
     height: 0,
@@ -39,6 +38,10 @@ const state = {
     vx: 0,
     vy: 0,
     color: '',
+  },
+  colors: {
+    color1: config.colors[0],
+    color2: config.colors[1],
   },
   scores: {
     score1: 0,
@@ -63,12 +66,14 @@ function reset(state) {
   state.bars.bar2 = false;
 }
 
-function selectColor(state, color) {
-  state.currentColor = color;
+function selectColor(state, color1, color2) {
+  if (color1) state.colors.color1 = color1;
+  if (color2) state.colors.color2 = color2;
 }
 
-function startBar(state, x, y, color) {
+function startBar(state, x, y) {
   const player1 = x < state.field.width / 2;
+  const color = player1 ? state.colors.color1 : state.colors.color2;
   const bar = { x, y, height: 0, color };
   if (player1) state.bars.bar1 = bar;
   else state.bars.bar2 = bar;

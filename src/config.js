@@ -4,7 +4,7 @@ const config = {
    w: 90,
    h: 90,
  },
- startSpeed: 7,
+ startSpeed: 3,//7,
  maxSpeed: 20,
  speedIncreasePerHit: 0.8,
  initYSpeed: {
@@ -14,4 +14,5 @@ const config = {
  maxBarHeight: 250,
  winScore: 5,
  standbyTime: 30,
+ twoColorPickers: true,
 };

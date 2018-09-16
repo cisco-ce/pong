@@ -10,7 +10,7 @@ function createColorPicker(state, onSelect) {
     color.ontouchstart = (e) => {
       e.preventDefault();
       onSelect(c);
-      const prev = $('.color.selected');
+      const prev = bar.querySelector('.color.selected');
       if (prev) prev.classList.remove('selected');
       color.classList.add('selected');
     }

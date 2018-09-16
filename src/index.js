@@ -79,8 +79,12 @@ function keepAlive() {
 }
 
 function setupColors() {
-  const picker = createColorPicker(state, (c) => selectColor(state, c));
-  $('.footer').appendChild(picker);
+  const picker1 = createColorPicker(state, (c) => selectColor(state, c, null));
+  $('.footer').appendChild(picker1);
+
+  if (!config.twoColorPickers) return;
+  const picker2 = createColorPicker(state, (c) => selectColor(state, null, c));
+  $('.footer').appendChild(picker2);
 }
 
 function message(text) {
@@ -109,7 +113,7 @@ function init() {
     if (!state.isPlaying) togglePlay();
     else {
       const touch = event.touches[0];
-      startBar(state, touch.clientX, touch.clientY, state.currentColor);
+      startBar(state, touch.clientX, touch.clientY);
       updateBars(state);
     }
   }
