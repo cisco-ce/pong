@@ -73,7 +73,6 @@ function keypress(e) {
 }
 
 function keepAlive() {
-  console.log('keep alive');
   clearTimeout(keepAliveTimer);
   keepAliveTimer = setTimeout(startDemo, config.standbyTime * 1000);
 }
@@ -94,7 +93,6 @@ function message(text) {
 }
 
 function startDemo() {
-  console.log('start demo');
   $('.intro').style.display = 'flex';
   setDemo(state, true);
   update();

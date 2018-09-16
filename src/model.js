@@ -121,45 +121,51 @@ function newGame(state) {
   state.scores = { score1: 0, score2: 0 };
 }
 
-function nextStep(state) {
-  const { ball, bars, field } = state;
+function barAboutToBeHit(bar, ball, color) {
+  if (!bar) return false;
 
-  let x = ball.x + ball.vx;
-  let y = ball.y + ball.vy;
+  const x = ball.x + ball.vx;
+  const y = ball.y + ball.vy;
   const ballR = { x: x, y: y, w: ball.w, h: ball.h };
-  const bar1 = { x: bars.bar1.x, y: bars.bar1.y, w: BarW, h: bars.bar1.height };
-  const bar2 = { x: bars.bar2.x, y: bars.bar2.y, w: BarW, h: bars.bar2.height };
-  const hitPlayer1 = bars.bar1 && bars.bar1.color === ball.color && collides(ballR, bar1);
-  const hitPlayer2 = bars.bar2 && bars.bar2.color === ball.color && collides(ballR, bar2);
+  const barR = { x: bar.x, y: bar.y, w: BarW, h: bar.height };
+  const hit = bar.color === ball.color && collides(ballR, barR);
+  return hit;
+}
+
+function nextStep(state) {
+  const { ball, bars, field, colors, demo } = state;
+  const hitPlayer1 = barAboutToBeHit(bars.bar1, ball, colors.color1);
+  const hitPlayer2 = barAboutToBeHit(bars.bar2, ball, colors.color2);
+
+  const nextX = ball.x + ball.vx;
+  const nextY = ball.y + ball.vy;
   if (hitPlayer1 || hitPlayer2) {
     const newSpeed = -ball.vx - (Math.sign(ball.vx) * config.speedIncreasePerHit);
     ball.vx = absMax(newSpeed, config.maxSpeed);
     ball.color = randElement(config.colors);
-    x = ball.x;
-    y = ball.y;
     if (hitPlayer1) bars.bar1 = false;
     if (hitPlayer2) bars.bar2 = false;
   }
-  if (y < 0 || y + ball.h > field.height) {
-    ball.vy = -ball.vy;
-    y = ball.y;
-    x = ball.x;
-  }
-
-  ball.x = x;
-  ball.y = y;
-
-  if ((x < 0 || x + ball.w + 30> field.width) && state.demo) {
+  // demo bounce
+  else if ((nextX < 0 || nextX + ball.w + 20 > field.width) && demo) {
     ball.vx = -ball.vx;
     ball.color = randElement(config.colors);
   }
-  else if (x < 0) {
+  // hitting floor/roof:
+  else if (nextY < 0 || nextY + ball.h > field.height) {
+    ball.vy = -ball.vy;
+  }
+  else if (nextX < 0) {
     state.scores.score2 += 1;
     onGoal(state);
   }
-  else if (x + ball.w > field.width) {
+  else if (nextX + ball.w > field.width) {
     state.scores.score1 += 1;
     onGoal(state);
   }
-
+  // "normal" ball update
+  else {
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+  }
 }
