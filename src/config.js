@@ -4,9 +4,9 @@ const config = {
    w: 90,
    h: 90,
  },
- startSpeed: 7,
- maxSpeed: 20,
- speedIncreasePerHit: 0.8,
+ startSpeed: 8,
+ maxSpeed: 30,
+ speedIncreasePerHit: 1,
  initYSpeed: {
    min: 1.5,
    max: 3,
