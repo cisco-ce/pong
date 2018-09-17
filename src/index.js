@@ -102,13 +102,14 @@ function startDemo() {
   update();
 }
 
-function init() {
+function onResize() {
   state.field.width = window.innerWidth;
   state.field.height = window.innerHeight;
   const field = $('.field');
-  field.style.width = state.field.width + 'px';
-  field.style.height = state.field.height + 'px';
+}
 
+function init() {
+  onResize();
   reset(state);
 
   ontouchstart = (e) => {
@@ -124,11 +125,6 @@ function init() {
     drawBar(state, touch.clientX, touch.clientY);
     updateBars(state);
   }
-
-  // field.ontouchstart = (e) => {
-  //   e.preventDefault();
-  //   touch(e.touches[0].clientX, e.touches[0].clientY);
-  // };
 
   const ball = $('.ball');
   ball.style.width = state.ball.w + 'px';
@@ -151,6 +147,7 @@ function init() {
   }
 
   window.addEventListener('touchstart', keepAlive, true);
+  window.onresize = onResize;
   window.onkeydown = keypress;
   window.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
   setupColors();
