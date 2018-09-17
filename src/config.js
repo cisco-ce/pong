@@ -1,8 +1,8 @@
 const config = {
   colors: ['black', '#ffb300', '#ff1a1b', '#e900d8', '#00c4e8', '#00e258'],
   ballSize: {
-   w: 90,
-   h: 90,
+   w: 70,
+   h: 70,
  },
  startSpeed: 8,
  maxSpeed: 30,
