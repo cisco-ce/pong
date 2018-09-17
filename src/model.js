@@ -74,7 +74,7 @@ function selectColor(state, color1, color2) {
 function startBar(state, x, y) {
   const player1 = x < state.field.width / 2;
   const color = player1 ? state.colors.color1 : state.colors.color2;
-  const bar = { x, y, height: 0, color };
+  const bar = { x, y, height: 0, color, yInit: y };
   if (player1) state.bars.bar1 = bar;
   else state.bars.bar2 = bar;
 }
@@ -96,18 +96,6 @@ function drawBar(state, x, y) {
   bar.y = yMin;
   bar.height = yMax - yMin;
 }
-
-// For direct set bar
-// function setBar(state, player1, values) {
-//   // cant set it more than once
-//   if (player1 && state.bars.bar1) return;
-//   if (!player1 && state.bars.bar2) return;
-//   if (!state.isPlaying) return;
-//
-//   if (!state.bars) state.bars = {};
-//   if (player1) state.bars.bar1 = values;
-//   else state.bars.bar2 = values;
-// }
 
 function onGoal(state) {
   reset(state);
@@ -139,12 +127,26 @@ function nextStep(state) {
 
   const nextX = ball.x + ball.vx;
   const nextY = ball.y + ball.vy;
+
+  let vyChange = 0;
   if (hitPlayer1 || hitPlayer2) {
     const newSpeed = -ball.vx - (Math.sign(ball.vx) * config.speedIncreasePerHit);
     ball.vx = absMax(newSpeed, config.maxSpeed);
     ball.color = randElement(config.colors);
-    if (hitPlayer1) bars.bar1 = false;
-    if (hitPlayer2) bars.bar2 = false;
+
+    const vyFactor = 1;
+    const minLength = 100; // need to be longer to influence angle
+    if (hitPlayer1) {
+      vyChange = bars.bar1.y < bars.bar1.yInit ? -vyFactor : vyFactor;
+      if (bars.bar1.height < minLength) vyChange = 0;
+      bars.bar1 = false;
+    }
+    else {
+      vyChange = bars.bar2.y < bars.bar2.yInit ?  -vyFactor : vyFactor;
+      if (bars.bar2.height < minLength) vyChange = 0;
+      bars.bar2 = false;
+    }
+    ball.vy += vyChange;
   }
   // demo bounce
   else if ((nextX < 0 || nextX + ball.w + 20 > field.width) && demo) {

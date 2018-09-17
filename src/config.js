@@ -6,7 +6,7 @@ const config = {
  },
  startSpeed: 8,
  maxSpeed: 30,
- speedIncreasePerHit: 1,
+ speedIncreasePerHit: 0.6,
  initYSpeed: {
    min: 1.5,
    max: 3,
