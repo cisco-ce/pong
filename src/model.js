@@ -43,6 +43,7 @@ const state = {
     color1: config.colors[0],
     color2: config.colors[0],
   },
+  lastScore: null, // player1, player2
   scores: {
     score1: 0,
     score2: 0,
@@ -58,7 +59,7 @@ function reset(state) {
   const { initYSpeed, startSpeed, colors } = config;
   ball.x = field.width / 2 - ball.w / 2;
   ball.y = field.height / 2 - ball.h / 2;
-  ball.vx = startSpeed * randSign();
+  ball.vx = state.lastScore === 'player1' ? startSpeed : -startSpeed;
   ball.vy = random(initYSpeed.min, initYSpeed.max) * randSign();
   state.isPlaying = false;
   ball.color = randElement(colors);
@@ -159,10 +160,12 @@ function nextStep(state) {
   }
   else if (nextX < 0) {
     state.scores.score2 += 1;
+    state.lastScore = 'player2';
     onGoal(state);
   }
   else if (nextX + ball.w > field.width) {
     state.scores.score1 += 1;
+    state.lastScore = 'player1';
     onGoal(state);
   }
   // "normal" ball update
