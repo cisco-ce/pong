@@ -75,15 +75,15 @@ html, body {
 
 .color {
   box-sizing: content-box; /* want border outside element */
-  height: 50px;
-  width: 50px;
+  height: 40px;
+  width: 40px;
   border-radius: 50%;
-  margin: 5px 12px;
-  border: 12px solid #333;
+  margin: 5px 9px;
+  border: 9px solid #333;
 }
 
 .color.selected {
-  border: 12px solid white;
+  border: 9px solid white;
 }
 
 .debug {
@@ -135,28 +135,28 @@ html, body {
 
 .dialog {
   font-family: CiscoSansTT Thin;
-  height: 600px;
-  width: 600px;
-  padding-top: 400px;
+  height: 400px;
+  width: 400px;
+  padding-top: 270px;
   border: 1px solid #ddd;
   border-radius: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 60px;
+  font-size: 40px;
   background-color: rgba(255, 255, 255, 0.85);
   background-image: url('assets/logo.svg');
-  background-size: 200px 200px;
+  background-size: 150px 150px;
   background-repeat: no-repeat;
-  background-position: center 100px;
+  background-position: center 50px;
   box-shadow: 5px 7px 4px 2px rgba(0,0,0,0.03);
 }
 
 .o-marker {
   display: inline-block;
-  width: 40px;
-  height: 40px;
+  width: 25px;
+  height: 25px;
   background: red;
   border-radius: 50%;
-  margin: -4px 4px;
+  margin: -2px 3px;
 }
