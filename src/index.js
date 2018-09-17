@@ -99,6 +99,7 @@ function startDemo() {
   $('.intro').style.display = 'flex';
   $('.o-marker').style.backgroundColor = randElement(config.colors);
   setDemo(state, true);
+  $('.footer').style.display = 'none';
   update();
 }
 
@@ -139,6 +140,7 @@ function init() {
 
   $('.intro').ontouchstart = (e) => {
     $('.intro').style.display = 'none';
+    $('.footer').style.display = 'flex';
     newGame(state);
     setDemo(state, false);
     keepAlive();
