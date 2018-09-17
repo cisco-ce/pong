@@ -83,7 +83,7 @@ function setDemo(state, isDemo) {
   state.demo = isDemo;
   state.isPlaying = isDemo;
   state.gameOver = false;
-  if (isDemo) state.ball.vx = (config.maxSpeed + config.startSpeed) / 2;
+  if (isDemo) state.ball.vx = config.startSpeed + 2;
 }
 
 function drawBar(state, x, y) {
