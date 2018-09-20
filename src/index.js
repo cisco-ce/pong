@@ -115,7 +115,7 @@ function init() {
   reset(state);
 
   ontouchstart = (e) => {
-    if (!state.isPlaying) togglePlay();
+    if (!state.isPlaying && e.target === $('.ball')) togglePlay();
     else {
       const touch = event.touches[0];
       startBar(state, touch.clientX, touch.clientY);
