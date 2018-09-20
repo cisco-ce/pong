@@ -74,7 +74,7 @@ function keypress(e) {
   if (e.key === ' ') togglePlay();
 }
 
-function keepAlive() {
+function keepAlive(e) {
   clearTimeout(keepAliveTimer);
   keepAliveTimer = setTimeout(startDemo, config.standbyTime * 1000);
 }
@@ -152,7 +152,10 @@ function init() {
   window.addEventListener('touchstart', keepAlive, true);
   window.onresize = onResize;
   window.onkeydown = keypress;
+  // prevent double tap to zoom etc
+  window.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
   window.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+  window.addEventListener('touchend', e => e.preventDefault(), { passive: false });
   setupColors();
   update();
   startDemo();
