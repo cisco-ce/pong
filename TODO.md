@@ -1,17 +1,22 @@
-- drag and drop to draw bar, limit height
-- stop game when we have a winner (first to five?)
-- cisco style color bar
-- style ball, optional drag tail
-- resize canvas on window change
 - reset game button
-
-- reflect depending on how ball hits
 - bonus: hit undo
+- stickies: slows down balls
+
+oyvind:
+- ball bounces to quick before bar
+- make bar thicker
+- angle on bar
+- make it split into more balls
+- leave some splatter on screen
+
 
 Intro:
 - you have 4k huge touch screen
 - world class video lens
-- face detection and speech recogntion
+- face detection and speech recognition
 - ultra sound pairing with mobile phone
+- beam forming microphones
+- artificial intelligence
+- four core cpu
 - you paid premium price for it
 - now... lets play pong
