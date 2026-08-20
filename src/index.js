@@ -221,6 +221,7 @@ function onResize() {
 function init() {
   canvas = document.getElementById('gameCanvas');
   ctx = canvas.getContext('2d');
+  $('#refreshBtn').style.display = config.showDebugRefresh ? 'block' : 'none';
 
   onResize();
   reset(state);

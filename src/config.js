@@ -18,4 +18,5 @@ const config = {
   ballSpawnInterval: 12,   // seconds between additional ball spawns
   maxBalls: 4,
   introDuration: 40,        // physics frames for ball grow-in animation
+  showDebugRefresh: true,
 };
