@@ -63,7 +63,7 @@ function render(state) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawDivider(field);
-  drawScores(scores, field);
+  if (!state.isPlaying) drawScores(scores, field);
   state.splats.forEach(drawSplat);
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
