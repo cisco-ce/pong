@@ -64,10 +64,37 @@ function render(state) {
 
   drawDivider(field);
   drawScores(scores, field);
+  state.splats.forEach(drawSplat);
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
   balls.forEach(drawBall);
   $('#startOverlay').style.display = !state.isPlaying && !state.demo && !state.gameOver ? 'flex' : 'none';
+}
+
+function drawSplat(splat) {
+  const { x, y, color, side, rays } = splat;
+  const baseAngle = side === 'left' ? 0 : Math.PI;
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineCap = 'round';
+  for (const { angle, len, width, dropR } of rays) {
+    const a = baseAngle + angle;
+    const ex = x + Math.cos(a) * len;
+    const ey = y + Math.sin(a) * len;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(ex, ey, dropR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.beginPath();
+  ctx.arc(x, y, 30, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
 }
 
 function drawDivider(field) {

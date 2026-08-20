@@ -43,6 +43,7 @@ const state = {
     bar1: null, // { points: [{x,y}], color, length }
     bar2: null,
   },
+  splats: [],
 };
 
 function reset(state) {
@@ -99,6 +100,7 @@ function newGame(state) {
   reset(state);
   state.gameOver = false;
   state.scores = { score1: 0, score2: 0 };
+  state.splats = [];
 }
 
 // Clamp ball velocity so it never travels more than maxAngle degrees from horizontal
@@ -144,6 +146,17 @@ function spawnBall(state) {
   ));
 }
 
+function createSplat(x, y, color, side) {
+  const count = 6 + Math.floor(Math.random() * 4);
+  const rays = Array.from({ length: count }, () => ({
+    angle: (Math.random() - 0.5) * Math.PI * 1.4,
+    len:   35 + Math.random() * 50,
+    width: 8  + Math.random() * 14,
+    dropR: 5  + Math.random() * 9,
+  }));
+  return { x, y, color, side, rays };
+}
+
 // Returns 'goal1', 'goal2', or null
 function stepBall(state, ball) {
   if (ball.introFrame < config.introDuration) {
@@ -181,9 +194,11 @@ function stepBall(state, ball) {
     ball.vy = -ball.vy;
   }
   else if (nextX < 0) {
+    state.splats.push(createSplat(0, ball.y + ball.h / 2, ball.color, 'left'));
     return 'goal2';
   }
   else if (nextX + ball.w > field.width) {
+    state.splats.push(createSplat(field.width, ball.y + ball.h / 2, ball.color, 'right'));
     return 'goal1';
   }
   else {
