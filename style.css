@@ -28,6 +28,45 @@ html, body {
   background: #f3f3f3;
 }
 
+.scores {
+  font-size: 250px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.score1, .score2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.score2 {
+  left: 50%;
+}
+
+.score-clip {
+  overflow: hidden;
+  line-height: 1;
+}
+
+.score-num {
+  display: block;
+}
+
+@keyframes scoreFlip {
+  from { transform: translateY(-110%); }
+  to   { transform: translateY(0); }
+}
+
+.score-num.flipping {
+  animation: scoreFlip 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 .footer {
   position: absolute;
   bottom: 60px;

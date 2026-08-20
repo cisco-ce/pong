@@ -63,7 +63,9 @@ function render(state) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawDivider(field);
-  if (!state.isPlaying) drawScores(scores, field);
+  updateScoreEl($('.score1'), scores.score1);
+  updateScoreEl($('.score2'), scores.score2);
+  $('.scores').style.visibility = state.isPlaying ? 'hidden' : 'visible';
   state.splats.forEach(drawSplat);
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
@@ -72,6 +74,17 @@ function render(state) {
     $('.o-marker').style.backgroundColor = balls[0].color;
   }
   $('#startOverlay').style.display = !state.isPlaying && !state.demo && !state.gameOver ? 'flex' : 'none';
+}
+
+function updateScoreEl(el, newValue) {
+  const num = el.querySelector('.score-num');
+  const str = String(newValue);
+  if (num.dataset.value === str) return;
+  num.dataset.value = str;
+  num.textContent = str;
+  num.classList.remove('flipping');
+  void num.offsetWidth; // force reflow to restart animation
+  num.classList.add('flipping');
 }
 
 function drawSplat(splat) {
@@ -158,17 +171,6 @@ function renderPath(path) {
     ctx.lineTo(points[i].x, points[i].y);
   }
   ctx.stroke();
-}
-
-function drawScores(scores, field) {
-  ctx.save();
-  ctx.font = '250px "CiscoSansTT Regular", sans-serif';
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(scores.score1, field.width / 4, field.height / 2);
-  ctx.fillText(scores.score2, (field.width * 3) / 4, field.height / 2);
-  ctx.restore();
 }
 
 // --- Misc --------------------------------------------------------------------
