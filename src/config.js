@@ -16,4 +16,6 @@ const config = {
   maxReflectionAngle: 60,  // degrees from horizontal; prevents near-vertical bouncing
   pathLineWidth: 14,       // drawn line width in pixels
   ballSpawnInterval: 12,   // seconds between additional ball spawns
+  maxBalls: 4,
+  introDuration: 40,        // physics frames for ball grow-in animation
 };

@@ -67,6 +67,7 @@ function render(state) {
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
   balls.forEach(drawBall);
+  $('#startOverlay').style.display = !state.isPlaying && !state.demo && !state.gameOver ? 'flex' : 'none';
 }
 
 function drawDivider(field) {
@@ -74,20 +75,29 @@ function drawDivider(field) {
   ctx.fillRect(field.width / 2 - 3, 0, 6, field.height);
 }
 
+function easeOutBack(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
 function drawBall(ball) {
   const { x, y, w, h, vx, vy, color } = ball;
   const cx = x + w / 2;
   const cy = y + h / 2;
-  const r = w / 2;
+  const inIntro = ball.introFrame < config.introDuration;
+  const r = (w / 2) * (inIntro ? easeOutBack(ball.introFrame / config.introDuration) : 1);
+  if (r <= 0) return;
 
-  // Motion shadow
-  ctx.save();
-  ctx.globalAlpha = 0.1;
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(cx - vx * 1.5, cy - vy * 1.5, r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
+  if (!inIntro) {
+    // Motion shadow
+    ctx.save();
+    ctx.globalAlpha = 0.1;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(cx - vx * 1.5, cy - vy * 1.5, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
 
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -129,19 +139,6 @@ function drawScores(scores, field) {
   ctx.fillText(scores.score1, field.width / 4, field.height / 2);
   ctx.fillText(scores.score2, (field.width * 3) / 4, field.height / 2);
   ctx.restore();
-}
-
-// --- Input helpers -----------------------------------------------------------
-
-function isBallTouched(touch) {
-  return state.balls.some(ball => {
-    const cx = ball.x + ball.w / 2;
-    const cy = ball.y + ball.h / 2;
-    const r = ball.w / 2;
-    const dx = touch.clientX - cx;
-    const dy = touch.clientY - cy;
-    return dx * dx + dy * dy <= r * r;
-  });
 }
 
 // --- Misc --------------------------------------------------------------------
@@ -203,12 +200,8 @@ function init() {
 
   ontouchstart = (e) => {
     const touch = e.touches[0];
-    if (!state.isPlaying && isBallTouched(touch)) {
-      togglePlay();
-    } else {
-      startBar(state, touch.clientX, touch.clientY);
-      if (!state.isPlaying) render(state);
-    }
+    startBar(state, touch.clientX, touch.clientY);
+    if (!state.isPlaying) render(state);
   };
 
   ontouchmove = (e) => {
@@ -233,6 +226,13 @@ function init() {
     render(state);
     e.stopPropagation();
   };
+
+  $('#startOverlay').ontouchstart = (e) => {
+    $('#startOverlay').style.display = 'none';
+    togglePlay();
+    e.stopPropagation();
+  };
+  $('#startOverlay').onclick = () => { if (!state.isPlaying) togglePlay(); };
 
   window.addEventListener('touchstart', keepAlive, true);
   window.onresize = onResize;

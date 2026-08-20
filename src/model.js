@@ -125,6 +125,7 @@ function makeBall(field, vx, vy) {
     vx,
     vy,
     color: randElement(config.colors),
+    introFrame: 0,
   };
 }
 
@@ -134,6 +135,7 @@ function nextSpawnInterval() {
 }
 
 function spawnBall(state) {
+  if (state.balls.length >= config.maxBalls) return;
   const { initYSpeed, startSpeed } = config;
   state.balls.push(makeBall(
     state.field,
@@ -144,6 +146,10 @@ function spawnBall(state) {
 
 // Returns 'goal1', 'goal2', or null
 function stepBall(state, ball) {
+  if (ball.introFrame < config.introDuration) {
+    ball.introFrame++;
+    return null;
+  }
   const { bars, field, demo } = state;
 
   const hit1 = bars.bar1 && bars.bar1.color === ball.color ? pathHitNormal(bars.bar1, ball) : null;
