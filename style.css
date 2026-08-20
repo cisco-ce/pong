@@ -43,26 +43,26 @@ html, body {
   margin: 5px 0;
   display: inline-flex;
   align-items: center;
-  padding: 30px;
+  padding: 20px;
   border: 2px solid #ccc;
   background: white; /* allow ball to be seen behind */
   border-radius: 60px;
-  gap: 40px;
+  gap: 30px;
   box-shadow: 5px 5px 5px #0001;
 }
 
 .color {
-  box-sizing: content-box; /* want border outside element */
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
   border-radius: 50%;
-  border: 5px solid transparent;
+  border: 3px solid transparent;
   transform: scale(1);
   transition: transform 0.2s;
 }
 
 .color.selected {
   transform: scale(1.7);
+  border-width: 2px;
 }
 
 .debug {
