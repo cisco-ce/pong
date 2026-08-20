@@ -181,6 +181,7 @@ function stepBall(state, ball) {
       const clamped = clampBallAngle(ball.vx, ball.vy);
       ball.vx = clamped.vx;
       ball.vy = clamped.vy;
+      if (!demo) playSound('hitLine');
     }
     ball.color = randElement(config.colors);
     if (hit1) bars.bar1 = null;
@@ -192,12 +193,15 @@ function stepBall(state, ball) {
   }
   else if (nextY < 0 || nextY + ball.h > field.height) {
     ball.vy = -ball.vy;
+    if (!demo) playSound('hitWall');
   }
   else if (nextX < 0) {
+    if (!demo) playSound('miss');
     state.splats.push(createSplat(0, ball.y + ball.h / 2, ball.color, 'left'));
     return 'goal2';
   }
   else if (nextX + ball.w > field.width) {
+    if (!demo) playSound('miss');
     state.splats.push(createSplat(field.width, ball.y + ball.h / 2, ball.color, 'right'));
     return 'goal1';
   }

@@ -1,6 +1,15 @@
 
 function $(sel) { return document.querySelector(sel); }
 
+const sounds = {};
+function playSound(name) {
+  if (!config.soundEnabled) return;
+  const s = sounds[name];
+  if (!s) return;
+  s.currentTime = 0;
+  s.play().catch(() => {});
+}
+
 let canvas, ctx;
 let keepAliveTimer = 0;
 let animFrameId = null;
@@ -226,6 +235,9 @@ function onResize() {
 function init() {
   canvas = document.getElementById('gameCanvas');
   ctx = canvas.getContext('2d');
+  sounds.hitWall = new Audio('audio/hit-wall.wav');
+  sounds.hitLine = new Audio('audio/hit-line.wav');
+  sounds.miss    = new Audio('audio/miss.wav');
   $('#refreshBtn').style.display = config.showDebugRefresh ? 'block' : 'none';
 
   onResize();
