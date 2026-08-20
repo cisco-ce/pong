@@ -68,6 +68,9 @@ function render(state) {
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
   balls.forEach(drawBall);
+  if (state.demo && balls.length > 0) {
+    $('.o-marker').style.backgroundColor = balls[0].color;
+  }
   $('#startOverlay').style.display = !state.isPlaying && !state.demo && !state.gameOver ? 'flex' : 'none';
 }
 
