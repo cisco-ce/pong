@@ -10,7 +10,7 @@ const config = {
     max: 3,
   },
   maxBarHeight: 450,
-  winScore: 5,
+  winScore: 3,
   standbyTime: 30,
   twoColorPickers: true,
   maxReflectionAngle: 60,  // degrees from horizontal; prevents near-vertical bouncing
