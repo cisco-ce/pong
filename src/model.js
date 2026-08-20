@@ -48,7 +48,7 @@ const state = {
 
 function reset(state) {
   const { initYSpeed, startSpeed } = config;
-  const vx = (state.lastScore === 'player1' ? startSpeed : state.lastScore === 'player2' ? -startSpeed : startSpeed * randSign());
+  const vx = startSpeed * randSign();
   const vy = random(initYSpeed.min, initYSpeed.max) * randSign();
   state.isPlaying = false;
   state.bars.bar1 = null;
