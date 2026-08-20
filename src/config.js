@@ -1,26 +1,20 @@
 const config = {
   colors: ['black', '#ffb300', '#ff1a1b', '#e900d8', '#00c4e8', '#00e258'],
   ballSize: {
-   w: 70,
-   h: 70,
- },
- startSpeed: 8,
- maxSpeed: 30,
- speedIncreasePerHit: 0.6,
- initYSpeed: {
-   min: 1.5,
-   max: 3,
- },
- maxBarHeight: 450,
- winScore: 5,
- standbyTime: 30,
- twoColorPickers: true,
+    w: 70,
+    h: 70,
+  },
+  startSpeed: 6,//8,
+  maxSpeed: 30,
+  speedIncreasePerHit: 0, // 0.6,
+  initYSpeed: {
+    min: 1.5,
+    max: 3,
+  },
+  maxBarHeight: 450,
+  winScore: 5,
+  standbyTime: 30,
+  twoColorPickers: true,
+  maxReflectionAngle: 60,  // degrees from horizontal; prevents near-vertical bouncing
+  pathLineWidth: 14,       // drawn line width in pixels
 };
-
-const classicConfig = {
-  colors: ['white'],
-  ballSize: {
-   w: 20,
-   h: 20,
- },
-}

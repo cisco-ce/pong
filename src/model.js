@@ -4,8 +4,6 @@
  * - x,y is zero at top left and positive right and downwards
  */
 
-const BarW = 20;
-
 function absMax(value, max) {
   if (value > max) return max;
   if (value < -max) return -max;
@@ -49,8 +47,8 @@ const state = {
     score2: 0,
   },
   bars: {
-    bar1: false, // { x, y, color },
-    bar2: false,
+    bar1: null, // { points: [{x,y}], color, length }
+    bar2: null,
   },
 };
 
@@ -63,8 +61,8 @@ function reset(state) {
   ball.vy = random(initYSpeed.min, initYSpeed.max) * randSign();
   state.isPlaying = false;
   ball.color = randElement(colors);
-  state.bars.bar1 = false;
-  state.bars.bar2 = false;
+  state.bars.bar1 = null;
+  state.bars.bar2 = null;
 }
 
 function selectColor(state, color1, color2) {
@@ -75,7 +73,7 @@ function selectColor(state, color1, color2) {
 function startBar(state, x, y) {
   const player1 = x < state.field.width / 2;
   const color = player1 ? state.colors.color1 : state.colors.color2;
-  const bar = { x, y, height: 0, color, yInit: y };
+  const bar = { points: [{ x, y }], color, length: 0 };
   if (player1) state.bars.bar1 = bar;
   else state.bars.bar2 = bar;
 }
@@ -88,14 +86,14 @@ function setDemo(state, isDemo) {
 }
 
 function drawBar(state, x, y) {
-  const MaxHeight = config.maxBarHeight;
   const player1 = x < state.field.width / 2;
   const bar = player1 ? state.bars.bar1 : state.bars.bar2;
-  if (bar.height >= MaxHeight) return;
-  const yMin = Math.min(y, bar.y);
-  const yMax = Math.max(y, bar.y + bar.height);
-  bar.y = yMin;
-  bar.height = yMax - yMin;
+  if (!bar || bar.length >= config.maxBarHeight) return;
+  const last = bar.points[bar.points.length - 1];
+  const segLen = Math.hypot(x - last.x, y - last.y);
+  if (segLen < 2) return;
+  bar.points.push({ x, y });
+  bar.length += segLen;
 }
 
 function onGoal(state) {
@@ -110,44 +108,51 @@ function newGame(state) {
   state.scores = { score1: 0, score2: 0 };
 }
 
-function barAboutToBeHit(bar, ball, color) {
-  if (!bar) return false;
-
-  const x = ball.x + ball.vx;
-  const y = ball.y + ball.vy;
-  const ballR = { x: x, y: y, w: ball.w, h: ball.h };
-  const barR = { x: bar.x, y: bar.y, w: BarW, h: bar.height };
-  const hit = bar.color === ball.color && collides(ballR, barR);
-  return hit;
+// Clamp ball velocity so it never travels more than maxAngle degrees from horizontal
+function clampBallAngle(vx, vy) {
+  const maxTan = Math.tan(config.maxReflectionAngle * Math.PI / 180);
+  const speed = Math.hypot(vx, vy);
+  if (speed === 0) return { vx, vy };
+  const maxVyAbs = Math.abs(vx) * maxTan;
+  if (Math.abs(vy) > maxVyAbs) {
+    vy = Math.sign(vy) * maxVyAbs;
+    const clamped = Math.hypot(vx, vy);
+    vx = vx * speed / clamped;
+    vy = vy * speed / clamped;
+  }
+  return { vx, vy };
 }
 
 function nextStep(state) {
-  const { ball, bars, field, colors, demo } = state;
-  const hitPlayer1 = barAboutToBeHit(bars.bar1, ball, colors.color1);
-  const hitPlayer2 = barAboutToBeHit(bars.bar2, ball, colors.color2);
+  const { ball, bars, field, demo } = state;
+
+  const hit1 = bars.bar1 && bars.bar1.color === ball.color ? pathHitNormal(bars.bar1, ball) : null;
+  const hit2 = bars.bar2 && bars.bar2.color === ball.color ? pathHitNormal(bars.bar2, ball) : null;
+  const hitNormal = hit1 || hit2;
 
   const nextX = ball.x + ball.vx;
   const nextY = ball.y + ball.vy;
 
-  let vyChange = 0;
-  if (hitPlayer1 || hitPlayer2) {
-    const newSpeed = -ball.vx - (Math.sign(ball.vx) * config.speedIncreasePerHit);
-    ball.vx = absMax(newSpeed, config.maxSpeed);
+  if (hitNormal) {
+    const { nx, ny } = hitNormal;
+    const dot = ball.vx * nx + ball.vy * ny;
+    if (dot < 0) {
+      const speed = Math.hypot(ball.vx, ball.vy);
+      ball.vx -= 2 * dot * nx;
+      ball.vy -= 2 * dot * ny;
+      const newSpeed = Math.min(speed + config.speedIncreasePerHit, config.maxSpeed);
+      const reflectedSpeed = Math.hypot(ball.vx, ball.vy);
+      if (reflectedSpeed > 0) {
+        ball.vx = ball.vx * newSpeed / reflectedSpeed;
+        ball.vy = ball.vy * newSpeed / reflectedSpeed;
+      }
+      const clamped = clampBallAngle(ball.vx, ball.vy);
+      ball.vx = clamped.vx;
+      ball.vy = clamped.vy;
+    }
     ball.color = randElement(config.colors);
-
-    const vyFactor = 1;
-    const minLength = 100; // need to be longer to influence angle
-    if (hitPlayer1) {
-      vyChange = bars.bar1.y < bars.bar1.yInit ? -vyFactor : vyFactor;
-      if (bars.bar1.height < minLength) vyChange = 0;
-      bars.bar1 = false;
-    }
-    else {
-      vyChange = bars.bar2.y < bars.bar2.yInit ?  -vyFactor : vyFactor;
-      if (bars.bar2.height < minLength) vyChange = 0;
-      bars.bar2 = false;
-    }
-    ball.vy += vyChange;
+    if (hit1) bars.bar1 = null;
+    else bars.bar2 = null;
   }
   // demo bounce
   else if ((nextX < 0 || nextX + ball.w + 20 > field.width) && demo) {

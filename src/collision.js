@@ -37,3 +37,42 @@ function test() {
     true
   );
 }
+
+// Returns shortest distance from point (px,py) to segment (ax,ay)→(bx,by)
+function distPointSegment(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq === 0) return Math.hypot(px - ax, py - ay);
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq));
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+// Returns unit normal of segment pointing toward (px,py)
+function segmentNormal(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const lenSq = dx * dx + dy * dy;
+  const t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq));
+  const cx = ax + t * dx, cy = ay + t * dy;
+  const nx = px - cx, ny = py - cy;
+  const len = Math.hypot(nx, ny) || 1;
+  return { nx: nx / len, ny: ny / len };
+}
+
+// Returns collision normal if ball's next position hits path, otherwise null
+function pathHitNormal(path, ball) {
+  if (!path || path.points.length < 2) return null;
+  const cx = ball.x + ball.w / 2 + ball.vx;
+  const cy = ball.y + ball.h / 2 + ball.vy;
+  const r = ball.w / 2;
+  const pts = path.points;
+  let minDist = Infinity;
+  let result = null;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const d = distPointSegment(cx, cy, pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y);
+    if (d < r && d < minDist) {
+      minDist = d;
+      result = segmentNormal(cx, cy, pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y);
+    }
+  }
+  return result;
+}

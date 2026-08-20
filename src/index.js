@@ -64,8 +64,8 @@ function render(state) {
 
   drawDivider(field);
   drawScores(scores, field);
-  if (bars.bar1) renderBar(bars.bar1);
-  if (bars.bar2) renderBar(bars.bar2);
+  if (bars.bar1) renderPath(bars.bar1);
+  if (bars.bar2) renderPath(bars.bar2);
   drawBall(ball);
 }
 
@@ -95,14 +95,29 @@ function drawBall(ball) {
   ctx.fill();
 }
 
-function renderBar(bar) {
-  const { x, y, height, color } = bar;
-  if (height <= 0) return;
-  const r = BarW / 2;
-  ctx.fillStyle = color;
+function renderPath(path) {
+  const { points, color } = path;
+  if (points.length === 0) return;
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = config.pathLineWidth;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  if (points.length === 1) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(points[0].x, points[0].y, config.pathLineWidth / 2, 0, Math.PI * 2);
+    ctx.fill();
+    return;
+  }
+
   ctx.beginPath();
-  ctx.roundRect(x, y, BarW, height, r);
-  ctx.fill();
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+  ctx.stroke();
 }
 
 function drawScores(scores, field) {

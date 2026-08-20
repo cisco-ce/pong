@@ -3,7 +3,7 @@
 - Dont increase speed, add more balls instead as time goes by
   make the action frenetic instead of just reaction based
 - Draw actual lines, and make the ball bounce according to angle at hitpoint
-- Add sound effects
+- Add sound effects. sound each time ball hits something, and when it goes out
 - Make a undo button appear randomly. it will reverse the ball
 - Restyle for 2026 whiteboard
 - Add handwritten intro
