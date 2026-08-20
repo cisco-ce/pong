@@ -257,12 +257,12 @@ function init() {
     e.stopPropagation();
   };
 
-  $('#startOverlay').ontouchstart = (e) => {
+  $('#startBtn').ontouchstart = (e) => {
     $('#startOverlay').style.display = 'none';
     togglePlay();
     e.stopPropagation();
   };
-  $('#startOverlay').onclick = () => { if (!state.isPlaying) togglePlay(); };
+  $('#startBtn').onclick = () => { if (!state.isPlaying) togglePlay(); };
 
   window.addEventListener('touchstart', keepAlive, true);
   window.onresize = onResize;
