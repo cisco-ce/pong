@@ -1,10 +1,8 @@
 # 2026 Pong 2
 
-- Add sound effects. sound each time ball hits something, and when it goes out
 - Add handwritten intro
 - Allow multiple lines per user?
 
-- reset game button
 - bonus: hit undo
 - stickies: slows down balls
 

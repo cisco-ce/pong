@@ -90,10 +90,12 @@ function updateScoreEl(el, newValue) {
   const str = String(newValue);
   if (num.dataset.value === str) return;
   num.dataset.value = str;
-  num.textContent = str;
-  num.classList.remove('flipping');
-  void num.offsetWidth; // force reflow to restart animation
-  num.classList.add('flipping');
+  setTimeout(() => {
+    num.textContent = str;
+    num.classList.remove('flipping');
+    void num.offsetWidth; // force reflow to restart animation
+    num.classList.add('flipping');
+  }, 350);
 }
 
 function drawSplat(splat) {
