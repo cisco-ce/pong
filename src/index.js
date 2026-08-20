@@ -226,14 +226,16 @@ function init() {
   reset(state);
 
   ontouchstart = (e) => {
-    const touch = e.touches[0];
-    startBar(state, touch.clientX, touch.clientY);
+    for (const touch of e.changedTouches) {
+      startBar(state, touch.clientX, touch.clientY);
+    }
     if (!state.isPlaying) render(state);
   };
 
   ontouchmove = (e) => {
-    const touch = e.touches[0];
-    drawBar(state, touch.clientX, touch.clientY);
+    for (const touch of e.changedTouches) {
+      drawBar(state, touch.clientX, touch.clientY);
+    }
     if (!state.isPlaying) render(state);
   };
 
