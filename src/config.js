@@ -4,9 +4,7 @@ const config = {
     w: 70,
     h: 70,
   },
-  startSpeed: 6,//8,
-  maxSpeed: 30,
-  speedIncreasePerHit: 0, // 0.6,
+  startSpeed: 6,
   initYSpeed: {
     min: 1.5,
     max: 3,
@@ -17,4 +15,5 @@ const config = {
   twoColorPickers: true,
   maxReflectionAngle: 60,  // degrees from horizontal; prevents near-vertical bouncing
   pathLineWidth: 14,       // drawn line width in pixels
+  ballSpawnInterval: 12,   // seconds between additional ball spawns
 };

@@ -28,15 +28,8 @@ const state = {
   isPlaying: false,
   gameOver: false,
   demo: true,
-  ball: {
-    x: 0,
-    y: 0,
-    h: config.ballSize.h,
-    w: config.ballSize.w,
-    vx: 0,
-    vy: 0,
-    color: '',
-  },
+  balls: [],
+  ballSpawnTimer: 0,
   colors: {
     color1: config.colors[0],
     color2: config.colors[0],
@@ -53,16 +46,14 @@ const state = {
 };
 
 function reset(state) {
-  const { field, ball } = state;
-  const { initYSpeed, startSpeed, colors } = config;
-  ball.x = field.width / 2 - ball.w / 2;
-  ball.y = field.height / 2 - ball.h / 2;
-  ball.vx = state.lastScore === 'player1' ? startSpeed : -startSpeed;
-  ball.vy = random(initYSpeed.min, initYSpeed.max) * randSign();
+  const { initYSpeed, startSpeed } = config;
+  const vx = state.lastScore === 'player1' ? startSpeed : -startSpeed;
+  const vy = random(initYSpeed.min, initYSpeed.max) * randSign();
   state.isPlaying = false;
-  ball.color = randElement(colors);
   state.bars.bar1 = null;
   state.bars.bar2 = null;
+  state.balls = [makeBall(state.field, vx, vy)];
+  state.ballSpawnTimer = nextSpawnInterval();
 }
 
 function selectColor(state, color1, color2) {
@@ -82,7 +73,9 @@ function setDemo(state, isDemo) {
   state.demo = isDemo;
   state.isPlaying = isDemo;
   state.gameOver = false;
-  if (isDemo) state.ball.vx = config.startSpeed + 2;
+  if (isDemo && state.balls.length > 0) {
+    state.balls[0].vx = Math.sign(state.balls[0].vx || 1) * (config.startSpeed + 2);
+  }
 }
 
 function drawBar(state, x, y) {
@@ -123,8 +116,35 @@ function clampBallAngle(vx, vy) {
   return { vx, vy };
 }
 
-function nextStep(state) {
-  const { ball, bars, field, demo } = state;
+function makeBall(field, vx, vy) {
+  return {
+    x: field.width / 2 - config.ballSize.w / 2,
+    y: field.height / 2 - config.ballSize.h / 2,
+    w: config.ballSize.w,
+    h: config.ballSize.h,
+    vx,
+    vy,
+    color: randElement(config.colors),
+  };
+}
+
+function nextSpawnInterval() {
+  const base = config.ballSpawnInterval * 60; // frames at 60fps
+  return Math.round(base * (0.7 + Math.random() * 0.6)); // 70%–130% of base
+}
+
+function spawnBall(state) {
+  const { initYSpeed, startSpeed } = config;
+  state.balls.push(makeBall(
+    state.field,
+    startSpeed * randSign(),
+    random(initYSpeed.min, initYSpeed.max) * randSign(),
+  ));
+}
+
+// Returns 'goal1', 'goal2', or null
+function stepBall(state, ball) {
+  const { bars, field, demo } = state;
 
   const hit1 = bars.bar1 && bars.bar1.color === ball.color ? pathHitNormal(bars.bar1, ball) : null;
   const hit2 = bars.bar2 && bars.bar2.color === ball.color ? pathHitNormal(bars.bar2, ball) : null;
@@ -137,15 +157,8 @@ function nextStep(state) {
     const { nx, ny } = hitNormal;
     const dot = ball.vx * nx + ball.vy * ny;
     if (dot < 0) {
-      const speed = Math.hypot(ball.vx, ball.vy);
       ball.vx -= 2 * dot * nx;
       ball.vy -= 2 * dot * ny;
-      const newSpeed = Math.min(speed + config.speedIncreasePerHit, config.maxSpeed);
-      const reflectedSpeed = Math.hypot(ball.vx, ball.vy);
-      if (reflectedSpeed > 0) {
-        ball.vx = ball.vx * newSpeed / reflectedSpeed;
-        ball.vy = ball.vy * newSpeed / reflectedSpeed;
-      }
       const clamped = clampBallAngle(ball.vx, ball.vy);
       ball.vx = clamped.vx;
       ball.vy = clamped.vy;
@@ -154,28 +167,50 @@ function nextStep(state) {
     if (hit1) bars.bar1 = null;
     else bars.bar2 = null;
   }
-  // demo bounce
   else if ((nextX < 0 || nextX + ball.w + 20 > field.width) && demo) {
     ball.vx = -ball.vx;
     ball.color = randElement(config.colors);
   }
-  // hitting floor/roof:
   else if (nextY < 0 || nextY + ball.h > field.height) {
     ball.vy = -ball.vy;
   }
   else if (nextX < 0) {
-    state.scores.score2 += 1;
-    state.lastScore = 'player2';
-    onGoal(state);
+    return 'goal2';
   }
   else if (nextX + ball.w > field.width) {
-    state.scores.score1 += 1;
-    state.lastScore = 'player1';
-    onGoal(state);
+    return 'goal1';
   }
-  // "normal" ball update
   else {
     ball.x += ball.vx;
     ball.y += ball.vy;
+  }
+  return null;
+}
+
+function nextStep(state) {
+  const { demo } = state;
+
+  if (!demo) {
+    state.ballSpawnTimer--;
+    if (state.ballSpawnTimer <= 0) {
+      spawnBall(state);
+      state.ballSpawnTimer = nextSpawnInterval();
+    }
+  }
+
+  for (const ball of state.balls) {
+    const result = stepBall(state, ball);
+    if (result === 'goal2') {
+      state.scores.score2 += 1;
+      state.lastScore = 'player2';
+      onGoal(state);
+      return;
+    }
+    if (result === 'goal1') {
+      state.scores.score1 += 1;
+      state.lastScore = 'player1';
+      onGoal(state);
+      return;
+    }
   }
 }

@@ -59,14 +59,14 @@ function gameLoop(timestamp) {
 // --- Canvas rendering --------------------------------------------------------
 
 function render(state) {
-  const { ball, bars, scores, field } = state;
+  const { balls, bars, scores, field } = state;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawDivider(field);
   drawScores(scores, field);
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
-  drawBall(ball);
+  balls.forEach(drawBall);
 }
 
 function drawDivider(field) {
@@ -134,13 +134,14 @@ function drawScores(scores, field) {
 // --- Input helpers -----------------------------------------------------------
 
 function isBallTouched(touch) {
-  const { ball } = state;
-  const cx = ball.x + ball.w / 2;
-  const cy = ball.y + ball.h / 2;
-  const r = ball.w / 2;
-  const dx = touch.clientX - cx;
-  const dy = touch.clientY - cy;
-  return dx * dx + dy * dy <= r * r;
+  return state.balls.some(ball => {
+    const cx = ball.x + ball.w / 2;
+    const cy = ball.y + ball.h / 2;
+    const r = ball.w / 2;
+    const dx = touch.clientX - cx;
+    const dy = touch.clientY - cy;
+    return dx * dx + dy * dy <= r * r;
+  });
 }
 
 // --- Misc --------------------------------------------------------------------
