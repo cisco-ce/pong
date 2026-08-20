@@ -21,29 +21,10 @@ html, body {
   border: 1px solid black;
 }
 
-.ball {
+#gameCanvas {
   position: absolute;
-  border-radius: 50%;
-  will-change: transform; /* for gpu acceleration, maybe not needed */
-}
-
-.ball-shadow {
-  display: none;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0px; /* offset programmatically for tail */
-  left: 0px;
-  border-radius: 50%;
-  background-color: inherit;
-  opacity: 0.1;
-}
-
-.player {
-  position: absolute;
-  width: 30px;
-  background-size: 100% 450px;
-  background-repeat: no-repeat;
+  top: 0;
+  left: 0;
 }
 
 .footer {
@@ -55,15 +36,6 @@ html, body {
   height: 50px;
   justify-content: space-around;
   align-items: center;
-}
-
-.divider {
-  position: absolute;
-  left: calc(50% - 3px);
-  top: 0;
-  width: 6px;
-  height: 100%;
-  background: #eee;
 }
 
 .colors {
@@ -113,27 +85,6 @@ html, body {
   border-radius: 40px;
   font-size: 30px;
   margin-top: 300px;
-}
-
-.scores {
-  font-size: 250px;
-  opacity: 0.3;
-}
-
-.score1, .score2 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: none;
-}
-
-.score2 {
-  left: 50%;
 }
 
 .dialog {

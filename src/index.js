@@ -1,70 +1,134 @@
 
-function $(sel) { return document.querySelector(sel) }
+function $(sel) { return document.querySelector(sel); }
 
+let canvas, ctx;
 let keepAliveTimer = 0;
+let animFrameId = null;
+let lastTime = 0;
+let accumulator = 0;
+
+// Physics always steps at 60 fps regardless of display refresh rate
+const STEP_MS = 1000 / 60;
+
+function scheduleFrame() {
+  if (animFrameId === null) {
+    animFrameId = requestAnimationFrame(gameLoop);
+  }
+}
 
 function togglePlay() {
   state.isPlaying = !state.isPlaying;
-  update();
+  if (state.isPlaying) {
+    lastTime = 0;
+    accumulator = 0;
+    scheduleFrame();
+  } else {
+    render(state);
+  }
 }
 
-function setPos(el, x, y) {
-  el.style.transform = `translate(${x}px, ${y}px)`;
-}
+function gameLoop(timestamp) {
+  animFrameId = null;
 
-function update() {
-  const { ball, scores, isPlaying, gameOver } = state;
-  updateBall(ball);
-  updateBars(state);
-  updateScores(state);
-  if (isPlaying) {
-    nextStep(state);
-    $('.scores').style.display = 'none';
-    window.requestAnimationFrame(update);
+  if (state.isPlaying) {
+    if (lastTime === 0) lastTime = timestamp;
+    // Cap delta to avoid spiral of death after tab switch / long pause
+    const delta = Math.min(timestamp - lastTime, 100);
+    lastTime = timestamp;
+    accumulator += delta;
+
+    while (accumulator >= STEP_MS && state.isPlaying) {
+      nextStep(state);
+      accumulator -= STEP_MS;
+    }
+
+    if (state.isPlaying) scheduleFrame();
+  } else {
+    lastTime = 0;
+    accumulator = 0;
   }
-  else {
-    $('.scores').style.display = 'block';
-  }
-  if (gameOver) {
-    const { scores } = state;
-    const winner = scores.score1 > scores.score2 ? 'Player 1' : 'Player 2';
+
+  render(state);
+
+  if (state.gameOver) {
+    const winner = state.scores.score1 > state.scores.score2 ? 'Player 1' : 'Player 2';
     message(`${winner} won!`);
   }
 }
 
-function updateScores(state) {
-  $('.score1').innerText = state.scores.score1;
-  $('.score2').innerText = state.scores.score2;
+// --- Canvas rendering --------------------------------------------------------
+
+function render(state) {
+  const { ball, bars, scores, field } = state;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawDivider(field);
+  drawScores(scores, field);
+  if (bars.bar1) renderBar(bars.bar1);
+  if (bars.bar2) renderBar(bars.bar2);
+  drawBall(ball);
 }
 
-function updateBar(element, bar) {
-  element.style.display = bar ? 'block' : 'none';
-  if (bar) {
-    const { x, y, color, height } = bar;
-    setPos(element, x, y);
-    const cname = color.replace('#', '');
-    element.style.backgroundImage = `url('assets/line-${cname}.png')`;
-    element.style.height = height + 'px';
-  }
+function drawDivider(field) {
+  ctx.fillStyle = '#eee';
+  ctx.fillRect(field.width / 2 - 3, 0, 6, field.height);
 }
 
-function updateBars(state) {
-  const { bar1, bar2 } = state.bars;
-  const player1 = $('.player1');
-  const player2 = $('.player2');
-  updateBar(player1, bar1);
-  updateBar(player2, bar2);
+function drawBall(ball) {
+  const { x, y, w, h, vx, vy, color } = ball;
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  const r = w / 2;
+
+  // Motion shadow
+  ctx.save();
+  ctx.globalAlpha = 0.1;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(cx - vx * 1.5, cy - vy * 1.5, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
 }
 
-function updateBall(b) {
-  const { x, y, vx, vy, color } = b;
-  const ball = $('.ball');
-  const shadow = $('.ball-shadow');
-  ball.style.backgroundColor = color;
-  shadow.style.left = (-1.5 * vx) + 'px';
-  shadow.style.top = (-1.5 * vy) + 'px';
-  setPos(ball, x, y);
+function renderBar(bar) {
+  const { x, y, height, color } = bar;
+  if (height <= 0) return;
+  const r = BarW / 2;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, BarW, height, r);
+  ctx.fill();
 }
+
+function drawScores(scores, field) {
+  ctx.save();
+  ctx.font = '250px "CiscoSansTT Regular", sans-serif';
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(scores.score1, field.width / 4, field.height / 2);
+  ctx.fillText(scores.score2, (field.width * 3) / 4, field.height / 2);
+  ctx.restore();
+}
+
+// --- Input helpers -----------------------------------------------------------
+
+function isBallTouched(touch) {
+  const { ball } = state;
+  const cx = ball.x + ball.w / 2;
+  const cy = ball.y + ball.h / 2;
+  const r = ball.w / 2;
+  const dx = touch.clientX - cx;
+  const dy = touch.clientY - cy;
+  return dx * dx + dy * dy <= r * r;
+}
+
+// --- Misc --------------------------------------------------------------------
 
 function debug(msg) {
   $('.debug').innerText = JSON.stringify(msg);
@@ -74,7 +138,7 @@ function keypress(e) {
   if (e.key === ' ') togglePlay();
 }
 
-function keepAlive(e) {
+function keepAlive() {
   clearTimeout(keepAliveTimer);
   keepAliveTimer = setTimeout(startDemo, config.standbyTime * 1000);
 }
@@ -101,43 +165,48 @@ function startDemo() {
   message(false);
   setDemo(state, true);
   $('.footer').style.display = 'none';
-  update();
+  lastTime = 0;
+  accumulator = 0;
+  scheduleFrame();
 }
 
 function onResize() {
   state.field.width = window.innerWidth;
   state.field.height = window.innerHeight;
-  const field = $('.field');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  if (!state.isPlaying) render(state);
 }
 
 function init() {
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+
   onResize();
   reset(state);
 
   ontouchstart = (e) => {
-    if (!state.isPlaying && e.target === $('.ball')) togglePlay();
-    else {
-      const touch = event.touches[0];
+    const touch = e.touches[0];
+    if (!state.isPlaying && isBallTouched(touch)) {
+      togglePlay();
+    } else {
       startBar(state, touch.clientX, touch.clientY);
-      updateBars(state);
+      if (!state.isPlaying) render(state);
     }
-  }
-  ontouchmove = (e) => {
-    const touch = event.touches[0];
-    drawBar(state, touch.clientX, touch.clientY);
-    updateBars(state);
-  }
+  };
 
-  const ball = $('.ball');
-  ball.style.width = state.ball.w + 'px';
-  ball.style.height = state.ball.h + 'px';
+  ontouchmove = (e) => {
+    const touch = e.touches[0];
+    drawBar(state, touch.clientX, touch.clientY);
+    if (!state.isPlaying) render(state);
+  };
 
   $('.message').ontouchstart = (e) => {
     $('.message').style.display = 'none';
     newGame(state);
-    update();
+    render(state);
     e.stopPropagation();
-  }
+  };
 
   $('.intro').ontouchstart = (e) => {
     $('.intro').style.display = 'none';
@@ -145,19 +214,18 @@ function init() {
     newGame(state);
     setDemo(state, false);
     keepAlive();
-    update();
+    render(state);
     e.stopPropagation();
-  }
+  };
 
   window.addEventListener('touchstart', keepAlive, true);
   window.onresize = onResize;
   window.onkeydown = keypress;
-  // prevent double tap to zoom etc
   window.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
   window.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
   window.addEventListener('touchend', e => e.preventDefault(), { passive: false });
   setupColors();
-  update();
+  render(state);
   startDemo();
 }
 
