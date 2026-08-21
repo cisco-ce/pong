@@ -147,15 +147,9 @@ function spawnBall(state) {
 }
 
 function createSplat(x, y, color, side) {
-  const count = 6 + Math.floor(Math.random() * 4);
-  const rays = Array.from({ length: count }, () => ({
-    angle: (Math.random() - 0.5) * Math.PI * 1.4,
-    len:   35 + Math.random() * 50,
-    width: 8  + Math.random() * 14,
-    dropR: 5  + Math.random() * 9,
-  }));
-  const col = color + 'cc' // transparency
-  return { x, y, color: col, side, rays };
+  const rotation = Math.random() * Math.PI * 2;
+  const size = 70 + Math.random() * 30;
+  return { x, y, color, side, rotation, size };
 }
 
 // Returns 'goal1', 'goal2', or null

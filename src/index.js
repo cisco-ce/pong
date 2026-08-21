@@ -11,6 +11,7 @@ function playSound(name) {
 }
 
 let canvas, ctx;
+let splatImg;
 let keepAliveTimer = 0;
 let animFrameId = null;
 let lastTime = 0;
@@ -99,28 +100,25 @@ function updateScoreEl(el, newValue) {
 }
 
 function drawSplat(splat) {
-  const { x, y, color, side, rays } = splat;
-  const baseAngle = side === 'left' ? 0 : Math.PI;
-  ctx.save();
-  ctx.fillStyle = color;
-  ctx.strokeStyle = color;
-  ctx.lineCap = 'round';
-  for (const { angle, len, width, dropR } of rays) {
-    const a = baseAngle + angle;
-    const ex = x + Math.cos(a) * len;
-    const ey = y + Math.sin(a) * len;
-    ctx.lineWidth = width;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(ex, ey);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(ex, ey, dropR, 0, Math.PI * 2);
-    ctx.fill();
+  const { x, y, rotation, size, color } = splat;
+  if (!splatImg.complete) return;
+
+  if (!splat._tinted) {
+    const oc = new OffscreenCanvas(size, size);
+    const octx = oc.getContext('2d');
+    octx.drawImage(splatImg, 0, 0, size, size);
+    octx.globalCompositeOperation = 'source-atop';
+    octx.fillStyle = color;
+    octx.fillRect(0, 0, size, size);
+    splat._tinted = oc;
   }
-  ctx.beginPath();
-  ctx.arc(x, y, 30, 0, Math.PI * 2);
-  ctx.fill();
+
+  const half = size / 2;
+  ctx.save();
+  ctx.globalAlpha = 0.75;
+  ctx.translate(x, y);
+  ctx.rotate(rotation);
+  ctx.drawImage(splat._tinted, -half, -half);
   ctx.restore();
 }
 
@@ -240,6 +238,8 @@ function init() {
   sounds.hitWall = new Audio('audio/hit-wall.wav');
   sounds.hitLine = new Audio('audio/hit-line.wav');
   sounds.miss    = new Audio('audio/miss.wav');
+  splatImg = new Image();
+  splatImg.src = 'assets/splat.png';
   $('#refreshBtn').style.display = config.showDebugRefresh ? 'block' : 'none';
 
   onResize();
