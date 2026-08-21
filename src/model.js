@@ -74,8 +74,11 @@ function setDemo(state, isDemo) {
   state.demo = isDemo;
   state.isPlaying = isDemo;
   state.gameOver = false;
-  if (isDemo && state.balls.length > 0) {
-    state.balls[0].vx = Math.sign(state.balls[0].vx || 1) * (config.startSpeed + 2);
+  if (isDemo) {
+    state.splats = [];
+    if (state.balls.length > 0) {
+      state.balls[0].vx = Math.sign(state.balls[0].vx || 1) * (config.startSpeed + 2);
+    }
   }
 }
 
