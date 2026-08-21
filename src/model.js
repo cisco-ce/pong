@@ -154,7 +154,8 @@ function createSplat(x, y, color, side) {
     width: 8  + Math.random() * 14,
     dropR: 5  + Math.random() * 9,
   }));
-  return { x, y, color, side, rays };
+  const col = color + 'cc' // transparency
+  return { x, y, color: col, side, rays };
 }
 
 // Returns 'goal1', 'goal2', or null
