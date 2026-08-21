@@ -20,4 +20,5 @@ const config = {
   introDuration: 40,        // physics frames for ball grow-in animation
   showDebugRefresh: false,
   soundEnabled: true,
+  showSplats: false,
 };

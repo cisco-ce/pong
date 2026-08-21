@@ -198,12 +198,12 @@ function stepBall(state, ball) {
   }
   else if (nextX < 0) {
     if (!demo) playSound('miss');
-    state.splats.push(createSplat(0, ball.y + ball.h / 2, ball.color, 'left'));
+    if (config.showSplats) state.splats.push(createSplat(0, ball.y + ball.h / 2, ball.color, 'left'));
     return 'goal2';
   }
   else if (nextX + ball.w > field.width) {
     if (!demo) playSound('miss');
-    state.splats.push(createSplat(field.width, ball.y + ball.h / 2, ball.color, 'right'));
+    if (config.showSplats) state.splats.push(createSplat(field.width, ball.y + ball.h / 2, ball.color, 'right'));
     return 'goal1';
   }
   else {

@@ -75,7 +75,7 @@ function render(state) {
   updateScoreEl($('.score1'), scores.score1);
   updateScoreEl($('.score2'), scores.score2);
   $('.scores').style.visibility = state.isPlaying ? 'hidden' : 'visible';
-  state.splats.forEach(drawSplat);
+  if (config.showSplats) state.splats.forEach(drawSplat);
   if (bars.bar1) renderPath(bars.bar1);
   if (bars.bar2) renderPath(bars.bar2);
   balls.forEach(drawBall);
