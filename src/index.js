@@ -237,7 +237,7 @@ function init() {
   ctx = canvas.getContext('2d');
   sounds.hitWall = new Audio('audio/hit-wall.wav');
   sounds.hitLine = new Audio('audio/hit-line.wav');
-  sounds.miss    = new Audio('audio/splat.mp3');
+  sounds.miss    = new Audio('audio/splat.wav');
   splatImg = new Image();
   splatImg.src = 'assets/splat.png';
   $('#refreshBtn').style.display = config.showDebugRefresh ? 'block' : 'none';
