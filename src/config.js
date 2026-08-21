@@ -9,7 +9,7 @@ const config = {
     min: 1.5,
     max: 3,
   },
-  maxBarHeight: 450,
+  maxBarHeight: 600,
   winScore: 3,
   standbyTime: 30,
   twoColorPickers: true,
