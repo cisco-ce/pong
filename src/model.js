@@ -202,6 +202,14 @@ function createSplat(x, y, color, side) {
   return { x, y, color, side, rotation, size };
 }
 
+// Returns the velocity after bouncing off a surface with the given normal
+function reflectVelocity(ball, { nx, ny }) {
+  const dot = ball.vx * nx + ball.vy * ny;
+  if (dot >= 0) return { vx: ball.vx, vy: ball.vy, bounced: false };
+  const { vx, vy } = clampBallAngle(ball.vx - 2 * dot * nx, ball.vy - 2 * dot * ny);
+  return { vx, vy, bounced: true };
+}
+
 // Returns 'goal1', 'goal2', or null
 function stepBall(state, ball) {
   if (ball.introFrame < config.introDuration) {
@@ -210,32 +218,31 @@ function stepBall(state, ball) {
   }
   const { bars, field, demo } = state;
 
-  let hitNormal = null;
   let hitList = null;
   let hitBar = null;
+  let reflected = null;
   for (const list of [bars.bar1, bars.bar2]) {
     for (const bar of list) {
       if (bar.color !== ball.color) continue;
-      hitNormal = pathHitNormal(bar, ball);
-      if (hitNormal) { hitList = list; hitBar = bar; break; }
+      const normal = pathHitNormal(bar, ball);
+      if (!normal) continue;
+      const v = reflectVelocity(ball, normal);
+      // Wrong-side hits pass through and leave the line in place
+      const towardOpponent = list === bars.bar1 ? v.vx > 0 : v.vx < 0;
+      if (!towardOpponent) continue;
+      hitList = list; hitBar = bar; reflected = v;
+      break;
     }
-    if (hitNormal) break;
+    if (hitBar) break;
   }
 
   const nextX = ball.x + ball.vx;
   const nextY = ball.y + ball.vy;
 
-  if (hitNormal) {
-    const { nx, ny } = hitNormal;
-    const dot = ball.vx * nx + ball.vy * ny;
-    if (dot < 0) {
-      ball.vx -= 2 * dot * nx;
-      ball.vy -= 2 * dot * ny;
-      const clamped = clampBallAngle(ball.vx, ball.vy);
-      ball.vx = clamped.vx;
-      ball.vy = clamped.vy;
-      if (!demo) playSound('hitLine');
-    }
+  if (hitBar) {
+    if (reflected.bounced && !demo) playSound('hitLine');
+    ball.vx = reflected.vx;
+    ball.vy = reflected.vy;
     ball.color = randElement(config.colors);
     hitList.splice(hitList.indexOf(hitBar), 1);
   }
