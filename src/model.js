@@ -44,6 +44,7 @@ const state = {
     bar2: [],
   },
   splats: [],
+  confetti: [],
 };
 
 function reset(state) {
@@ -76,6 +77,7 @@ function setDemo(state, isDemo) {
   state.gameOver = false;
   if (isDemo) {
     state.splats = [];
+    state.confetti = [];
     if (state.balls.length > 0) {
       state.balls[0].vx = Math.sign(state.balls[0].vx || 1) * (config.startSpeed + 2);
     }
@@ -103,6 +105,44 @@ function onGoal(state) {
   reset(state);
   const win = config.winScore;
   state.gameOver = state.scores.score1 === win || state.scores.score2 === win;
+  if (state.gameOver) spawnConfetti(state, state.scores.score1 > state.scores.score2);
+}
+
+function spawnConfetti(state, leftSide) {
+  const { width, height } = state.field;
+  const x0 = leftSide ? 0 : width / 2;
+  state.confetti = [];
+  for (let i = 0; i < config.confettiCount; i++) {
+    state.confetti.push({
+      x: x0 + random(0, width / 2),
+      y: height + 10,
+      vx: random(-6, 6),
+      vy: -random(14, 30),
+      rotation: random(0, Math.PI * 2),
+      vr: random(-0.3, 0.3),
+      phase: random(0, Math.PI * 2),
+      w: random(8, 16),
+      h: random(14, 26),
+      color: randElement(config.colors),
+      delay: random(0, 40), // frames; staggers the burst
+      age: 0,
+      life: random(150, 260),
+    });
+  }
+}
+
+// dt is in 60fps frames
+function stepConfetti(state, dt) {
+  state.confetti = state.confetti.filter(p => {
+    if (p.delay > 0) { p.delay -= dt; return true; }
+    p.vy += 0.35 * dt;
+    p.vx *= Math.pow(0.99, dt);
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.rotation += p.vr * dt;
+    p.age += dt;
+    return p.age < p.life && p.y < state.field.height + 40;
+  });
 }
 
 function newGame(state) {
@@ -110,6 +150,7 @@ function newGame(state) {
   state.gameOver = false;
   state.scores = { score1: 0, score2: 0 };
   state.splats = [];
+  state.confetti = [];
 }
 
 // Clamp ball velocity so it never travels more than maxAngle degrees from horizontal

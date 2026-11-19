@@ -22,4 +22,5 @@ const config = {
   showDebugRefresh: false,
   soundEnabled: true,
   showSplats: true,
+  confettiCount: 160,
 };

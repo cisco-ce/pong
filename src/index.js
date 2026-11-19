@@ -15,6 +15,7 @@ let splatImg;
 let keepAliveTimer = 0;
 let animFrameId = null;
 let lastTime = 0;
+let lastFrameTime = 0;
 let accumulator = 0;
 
 // Physics always steps at 60 fps regardless of display refresh rate
@@ -60,6 +61,13 @@ function gameLoop(timestamp) {
 
   render(state);
 
+  if (state.confetti.length > 0) {
+    const dt = lastFrameTime ? Math.min(timestamp - lastFrameTime, 100) / STEP_MS : 1;
+    stepConfetti(state, dt);
+    if (state.confetti.length > 0) scheduleFrame();
+  }
+  lastFrameTime = timestamp;
+
   if (state.gameOver) {
     const winner = state.scores.score1 > state.scores.score2 ? 'Player 1' : 'Player 2';
     message(`${winner} won!`);
@@ -80,6 +88,7 @@ function render(state) {
   bars.bar1.forEach(renderPath);
   bars.bar2.forEach(renderPath);
   balls.forEach(drawBall);
+  state.confetti.forEach(drawConfetti);
   if (state.demo && balls.length > 0) {
     $('.o-marker').style.backgroundColor = balls[0].color;
   }
@@ -155,6 +164,18 @@ function drawBall(ball) {
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function drawConfetti(p) {
+  if (p.delay > 0) return;
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, (p.life - p.age) / 40);
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rotation);
+  ctx.scale(1, Math.cos(p.age * 0.2 + p.phase)); // flutter
+  ctx.fillStyle = p.color;
+  ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+  ctx.restore();
 }
 
 function renderPath(path) {
