@@ -77,8 +77,8 @@ function render(state) {
   updateScoreEl($('.score2'), scores.score2);
   $('.scores').style.visibility = state.isPlaying ? 'hidden' : 'visible';
   if (config.showSplats) state.splats.forEach(drawSplat);
-  if (bars.bar1) renderPath(bars.bar1);
-  if (bars.bar2) renderPath(bars.bar2);
+  bars.bar1.forEach(renderPath);
+  bars.bar2.forEach(renderPath);
   balls.forEach(drawBall);
   if (state.demo && balls.length > 0) {
     $('.o-marker').style.backgroundColor = balls[0].color;
@@ -247,16 +247,20 @@ function init() {
 
   ontouchstart = (e) => {
     for (const touch of e.changedTouches) {
-      startBar(state, touch.clientX, touch.clientY);
+      startBar(state, touch.identifier, touch.clientX, touch.clientY);
     }
     if (!state.isPlaying) render(state);
   };
 
   ontouchmove = (e) => {
     for (const touch of e.changedTouches) {
-      drawBar(state, touch.clientX, touch.clientY);
+      drawBar(state, touch.identifier, touch.clientX, touch.clientY);
     }
     if (!state.isPlaying) render(state);
+  };
+
+  ontouchend = ontouchcancel = (e) => {
+    for (const touch of e.changedTouches) endBar(state, touch.identifier);
   };
 
   $('.message').ontouchstart = (e) => {

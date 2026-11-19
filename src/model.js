@@ -40,8 +40,8 @@ const state = {
     score2: 0,
   },
   bars: {
-    bar1: null, // { points: [{x,y}], color, length }
-    bar2: null,
+    bar1: [], // [{ id, points: [{x,y}], color, length }], oldest first
+    bar2: [],
   },
   splats: [],
 };
@@ -51,8 +51,8 @@ function reset(state) {
   const vx = startSpeed * randSign();
   const vy = random(initYSpeed.min, initYSpeed.max) * randSign();
   state.isPlaying = false;
-  state.bars.bar1 = null;
-  state.bars.bar2 = null;
+  state.bars.bar1 = [];
+  state.bars.bar2 = [];
   state.balls = [makeBall(state.field, vx, vy)];
   state.ballSpawnTimer = nextSpawnInterval();
 }
@@ -62,12 +62,12 @@ function selectColor(state, color1, color2) {
   if (color2) state.colors.color2 = color2;
 }
 
-function startBar(state, x, y) {
+function startBar(state, id, x, y) {
   const player1 = x < state.field.width / 2;
   const color = player1 ? state.colors.color1 : state.colors.color2;
-  const bar = { points: [{ x, y }], color, length: 0 };
-  if (player1) state.bars.bar1 = bar;
-  else state.bars.bar2 = bar;
+  const list = player1 ? state.bars.bar1 : state.bars.bar2;
+  list.push({ id, points: [{ x, y }], color, length: 0 });
+  while (list.length > config.maxBarsPerPlayer) list.shift();
 }
 
 function setDemo(state, isDemo) {
@@ -82,9 +82,15 @@ function setDemo(state, isDemo) {
   }
 }
 
-function drawBar(state, x, y) {
-  const player1 = x < state.field.width / 2;
-  const bar = player1 ? state.bars.bar1 : state.bars.bar2;
+// Touch ids get reused by browsers after a finger lifts, so release them
+function endBar(state, id) {
+  for (const bar of [...state.bars.bar1, ...state.bars.bar2]) {
+    if (bar.id === id) bar.id = null;
+  }
+}
+
+function drawBar(state, id, x, y) {
+  const bar = [...state.bars.bar1, ...state.bars.bar2].find(b => b.id === id);
   if (!bar || bar.length >= config.maxBarHeight) return;
   const last = bar.points[bar.points.length - 1];
   const segLen = Math.hypot(x - last.x, y - last.y);
@@ -163,9 +169,17 @@ function stepBall(state, ball) {
   }
   const { bars, field, demo } = state;
 
-  const hit1 = bars.bar1 && bars.bar1.color === ball.color ? pathHitNormal(bars.bar1, ball) : null;
-  const hit2 = bars.bar2 && bars.bar2.color === ball.color ? pathHitNormal(bars.bar2, ball) : null;
-  const hitNormal = hit1 || hit2;
+  let hitNormal = null;
+  let hitList = null;
+  let hitBar = null;
+  for (const list of [bars.bar1, bars.bar2]) {
+    for (const bar of list) {
+      if (bar.color !== ball.color) continue;
+      hitNormal = pathHitNormal(bar, ball);
+      if (hitNormal) { hitList = list; hitBar = bar; break; }
+    }
+    if (hitNormal) break;
+  }
 
   const nextX = ball.x + ball.vx;
   const nextY = ball.y + ball.vy;
@@ -182,8 +196,7 @@ function stepBall(state, ball) {
       if (!demo) playSound('hitLine');
     }
     ball.color = randElement(config.colors);
-    if (hit1) bars.bar1 = null;
-    else bars.bar2 = null;
+    hitList.splice(hitList.indexOf(hitBar), 1);
   }
   else if ((nextX < 0 || nextX + ball.w + 20 > field.width) && demo) {
     ball.vx = -ball.vx;

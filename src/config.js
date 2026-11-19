@@ -10,6 +10,7 @@ const config = {
     max: 3,
   },
   maxBarHeight: 600,
+  maxBarsPerPlayer: 2,
   winScore: 3,
   standbyTime: 30,
   twoColorPickers: true,

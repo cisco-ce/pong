@@ -1,7 +1,8 @@
 # 2026 Pong 2
 
+- Victory animation
+
 - Add handwritten intro
-- Allow multiple lines per user?
 
 - bonus: hit undo
 - stickies: slows down balls
